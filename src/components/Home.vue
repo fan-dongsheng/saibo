@@ -11,6 +11,7 @@
       <el-aside width="180px">
         <!-- 侧边栏菜单区域 -->
         <el-menu
+        v-loading="menuLoading"
           class="menu"
           active-text-color="#396FFF"
           unique-opened
@@ -47,6 +48,7 @@
 export default {
   data() {
     return {
+      menuLoading:false,
       editableTabsValue: this.$my_editableTabsValue,
       editableTabs: this.$my_tag_list,
       default_active_index: { active: '' },
@@ -299,7 +301,10 @@ export default {
     // }
   },
   created(){
-    
+    this.menuLoading=true
+    window.setTimeout(() => {
+      this.menuLoading=false
+    }, 300);
     
   }
 }
@@ -340,6 +345,11 @@ export default {
 .el-aside {
   .el-menu {
     border-right: none;
+    
+    .el-menu-item{
+      height: 62px;
+      line-height: 62px;
+    }
   }
   // border-right: 1px solid #C7CEDA;
 
