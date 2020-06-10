@@ -1,34 +1,25 @@
 <template>
   <el-container class="home-container">
-    <el-header>
+    <el-header style="height:80px;">
       <div>
-        <img src="../assets/u230.png" class="img-home-logo" alt />
-        <span>航天知识图谱</span>
+        <img src="../assets/logo.png" class="img-home-logo" alt />
+        
       </div>
-      <!-- <el-button type="info" @click="logout">退出</el-button> -->
+    
     </el-header>
     <el-container>
       <el-aside width="180px">
         <!-- 侧边栏菜单区域 -->
         <el-menu
           class="menu"
-          active-text-color="#868686"
+          active-text-color="#396FFF"
           unique-opened
           :collapse-transition="false"
-          @select="handleSelected"
+         router
+         :default-active="$route.path"
         >
-          <!-- 一级菜单 -->
-          <el-submenu :index="item.id + ''" v-for="item in menulist" :key="item.id">
-            <!-- 一级菜单的模板区域 -->
-            <template slot="title">
-              <!-- 图标 -->
-              <!-- <i :class="iconsObj[item.id]"></i> -->
-              <i class="icom"></i>
-              <!-- 文本 -->
-              <!-- <span>{{item.authName}}</span> -->
-            </template>
-          </el-submenu>
-          <el-menu-item :index="item.index" v-for="item in aside_list" :key="item.index">
+          
+          <el-menu-item :index="`/${item.index}`" v-for="item in aside_list" :key="item.index">
             <!-- 一级菜单的模板区域 -->
             <template slot="title">
               <!-- 图标 -->
@@ -39,45 +30,19 @@
           </el-menu-item>
         </el-menu>
       </el-aside>
-      <el-main>
+      <el-main style="background:#F2F3F4">
         <!-- 路由占位符 -->
-        <!-- <router-view></router-view> -->
+        <router-view></router-view>
 
-        <el-tabs
-          id="innerTab"
-          v-model="editableTabsValue['active-tab']"
-          type="card"
-          closable
-          @tab-remove="removeTab"
-          @tab-click="clickTab"
-          style="width: 99.8%;height: 100%;overflow-y: hidden;"
-        >
-          <el-tab-pane
-            v-for="(item) in editableTabs"
-            :key="item.name"
-            :label="item.title"
-            :name="item.title"
-            style="height: 100%;"
-          >
-            <div
-              v-if="item.menuorigin == 'remote' && item['isShow'] == 'true'"
-              v-html="item.content"
-            ></div>
-            <div v-else class="localTabDiv">
-              <keep-alive :include="keepAliveTagsList">
-                <router-view v-if="item['isShow'] == 'true'" class="overflow_h"></router-view>
-              </keep-alive>
-            </div>
-          </el-tab-pane>
-        </el-tabs>
+        
       </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+
+
 
 export default {
   data() {
@@ -87,60 +52,51 @@ export default {
       default_active_index: { active: '' },
 
       aside_list: [
-        {
-          index: 'search',
-          title: '智能检索',
-          name: 'Search',
+         {
+          index: 'projectManagement',
+          title: '项目管理',
+          name: 'projectManagement',
           icon: 'u228',
-          component: '@/components/search/Search.vue',
-          path: 'search',
+          component: '@/components/projectManagement.vue',
+          path: 'projectManagement',
           menuorigin: 'local'
         },
         {
-          index: 'atlasAnalysis',
-          title: '图谱分析',
-          name: 'AtlasAnalysis',
+          index: 'dataManagement',
+          title: '数据管理',
+          name: 'dataManagement',
           icon: 'u196',
-          component: '@/components/AtlasAnalysis.vue',
-          path: 'atlasAnalysis',
+          component: '@/components/dataManagement.vue',
+          path: 'dataManagement',
           menuorigin: 'local'
         },
         {
-          index: 'HelloWorld2',
-          title: '质量档案',
-          name: 'HelloWorld2',
+          index: 'modelManagement',
+          title: '模型管理',
+          name: 'modelManagement',
           icon: 'u194',
-          component: '@/components/HelloWorld.vue',
-          path: 'helloWorld2',
+          component: '@/components/modelManagement.vue',
+          path: 'modelManagement',
           menuorigin: 'local'
         },
         {
-          index: 'collaboration',
-          title: '协作共享',
-          name: 'Collaboration',
+          index: 'dataImport',
+          title: '数据导入',
+          name: 'dataImport',
           icon: 'u200',
-          component: '@/components/Collaboration.vue',
-          path: 'collaboration',
+          component: '@/components/dataImport.vue',
+          path: 'dataImport',
           menuorigin: 'local'
         },
         {
-          index: 'questionsAnswers',
-          title: '智能问答',
-          name: 'HelloWorld4',
+          index: 'mapQuiz',
+          title: '图谱问答',
+          name: 'mapQuiz',
           icon: 'u196',
-          component: '@/components/questionsAnswers.vue',
-          path: 'questionsAnswers',
+          component: '@/components/mapQuiz.vue',
+          path: 'mapQuiz',
           menuorigin: 'local'
         },
-        {
-          index: 'test',
-          title: 'test',
-          name: 'HelloWorld4',
-          icon: 'u196',
-          component: '@/components/test.vue',
-          path: 'test',
-          menuorigin: 'local'
-        }
       ],
       // 左侧菜单数据
       menulist: []
@@ -149,198 +105,202 @@ export default {
   components: {},
   methods: {
     // 保存链接的激活状态
-    saveNavState(activePath) {
-      window.sessionStorage.setItem('activePath', activePath)
-      this.activePath = activePath
-    },
-    /**
-     * 移除Tab
-     * @param targetName
-     */
-    removeTab(targetName) {
-      // 记录移除标签的index
-      let targetIndex = 0
-      for (; targetIndex < this.editableTabs.length; ++targetIndex) {
-        if (this.editableTabs[targetIndex].title == targetName) {
-          break
-        }
-      }
-      //如果移除的是当前Tab页，则激活当前页的上页或下页
-      if (this.editableTabsValue['active-tab'] === targetName) {
-        let nextTab = this.editableTabs[targetIndex + 1] || this.editableTabs[targetIndex - 1]
-        if (nextTab) {
-          //当前页并非最后一个tab页
-          //删除目标页
-          this.editableTabs.splice(targetIndex, 1)
-          //调用子组件的方法，激活下一页
-          this.clickTab({ name: nextTab.title })
-        } else {
-          //当前页是最后一个tab页
-          //只需要 删除目标页
-          this.editableTabs.splice(targetIndex, 1)
-        }
-      } else {
-        ///如果移除的不是当前Tab页，只需要 删除目标页
-        this.editableTabs.splice(targetIndex, 1)
-      }
-    },
+    // saveNavState(activePath) {
+    //   window.sessionStorage.setItem('activePath', activePath)
+    //   this.activePath = activePath
+    // },
+    // /**
+    //  * 移除Tab
+    //  * @param targetName
+    //  */
+    // removeTab(targetName) {
+    //   // 记录移除标签的index
+    //   let targetIndex = 0
+    //   for (; targetIndex < this.editableTabs.length; ++targetIndex) {
+    //     if (this.editableTabs[targetIndex].title == targetName) {
+    //       break
+    //     }
+    //   }
+    //   //如果移除的是当前Tab页，则激活当前页的上页或下页
+    //   if (this.editableTabsValue['active-tab'] === targetName) {
+    //     let nextTab = this.editableTabs[targetIndex + 1] || this.editableTabs[targetIndex - 1]
+    //     if (nextTab) {
+    //       //当前页并非最后一个tab页
+    //       //删除目标页
+    //       this.editableTabs.splice(targetIndex, 1)
+    //       //调用子组件的方法，激活下一页
+    //       this.clickTab({ name: nextTab.title })
+    //     } else {
+    //       //当前页是最后一个tab页
+    //       //只需要 删除目标页
+    //       this.editableTabs.splice(targetIndex, 1)
+    //     }
+    //   } else {
+    //     ///如果移除的不是当前Tab页，只需要 删除目标页
+    //     this.editableTabs.splice(targetIndex, 1)
+    //   }
+    // },
     /*
            点击当前页
             */
-    clickTab(tab) {
-      let _this = this
+    // clickTab(tab) {
+    //   let _this = this
 
-      //查找主Tab的名称
-      let childrenNode = _this.aside_list.concat()
-      let tempData = { id: 0, title: '', children: childrenNode }
-      let array = []
-      let searchResult = { flag: false }
+    //   //查找主Tab的名称
+    //   let childrenNode = _this.aside_list.concat()
+    //   let tempData = { id: 0, title: '', children: childrenNode }
+    //   let array = []
+    //   let searchResult = { flag: false }
 
-      this.searchMainTabName(tempData, tab.name, array, searchResult)
+    //   this.searchMainTabName(tempData, tab.name, array, searchResult)
 
-      //激活当前页所在的主Tab页
-      _this.mainHandleSelected(array[1].index, [array[1].index])
-      //选中当前页所在的左侧菜单栏的
-      let key = ''
-      let keyPath = ''
+    //   //激活当前页所在的主Tab页
+    //   _this.mainHandleSelected(array[1].index, [array[1].index])
+    //   //选中当前页所在的左侧菜单栏的
+    //   let key = ''
+    //   let keyPath = ''
 
-      for (let i = 0; i < _this.editableTabs.length; ++i) {
-        if (_this.editableTabs[i].title == tab.name) {
-          key = _this.editableTabs[i].key
-          keyPath = _this.editableTabs[i].keyPath
-          break
-        }
-      }
+    //   for (let i = 0; i < _this.editableTabs.length; ++i) {
+    //     if (_this.editableTabs[i].title == tab.name) {
+    //       key = _this.editableTabs[i].key
+    //       keyPath = _this.editableTabs[i].keyPath
+    //       break
+    //     }
+    //   }
 
-      _this.handleSelected(key, keyPath)
-    },
+    //   _this.handleSelected(key, keyPath)
+    // },
     //切换子菜单
-    mainHandleSelected: function(key, keyPath, node, aside_list) {
-      if (aside_list == undefined) {
-        aside_list = this.aside_list
-      }
-      for (let i = 0; i < aside_list.length; ++i) {
-        if (aside_list[i].index == key) {
-          //this.aside_list = aside_list[i].children
-          this.MainTitle = aside_list[i].title
-          break
-        }
-      }
-      //this.collapse = true
-    },
+    // mainHandleSelected: function(key, keyPath, node, aside_list) {
+    //   if (aside_list == undefined) {
+    //     aside_list = this.aside_list
+    //   }
+    //   for (let i = 0; i < aside_list.length; ++i) {
+    //     if (aside_list[i].index == key) {
+    //       //this.aside_list = aside_list[i].children
+    //       this.MainTitle = aside_list[i].title
+    //       break
+    //     }
+    //   }
+    //   //this.collapse = true
+    // },
     //左侧菜单栏选中
-    handleSelected: function(key, keyPath) {
-      // this.default_active_index = key
-      this.$set(this.default_active_index, 'active', key)
+    // handleSelected: function(key, keyPath) {
+    //   // this.default_active_index = key
+    //   this.$set(this.default_active_index, 'active', key)
 
-      let tabNode = { title: '', path: '', menuorigin: '', component: '' }
-      for (let i = 0; i < this.aside_list.length; ++i) {
-        if (this.aside_list[i].index == keyPath[0] && keyPath.length > 1) {
-          this.aside_list[i].children.forEach(item => {
-            if (item.index == keyPath[1]) {
-              tabNode.title = item.title
-              tabNode.path = item.path
-              tabNode.menuorigin = item.menuorigin
-              tabNode.component = item.component || ''
-              tabNode.key = key
-              tabNode.keyPath = keyPath
-              tabNode.name = item.name
-              return
-            }
-          })
-        } else if (this.aside_list[i].index == keyPath[0] && keyPath.length == 1) {
-          tabNode.title = this.aside_list[i].title
-          tabNode.path = this.aside_list[i].path
-          tabNode.menuorigin = this.aside_list[i].menuorigin
-          tabNode.component = this.aside_list[i].component || ''
-          tabNode.key = key
-          tabNode.keyPath = keyPath
-          tabNode.name = this.aside_list[i].name
-          break
-        }
-      }
-      this.addTab(tabNode)
-    },
-    addTab(tabNode) {
-      //修改缓存信息
-      let new_tab_list_keepAlive = this.$store.getters.keepAliveTagsList
-      if (!new_tab_list_keepAlive.includes(tabNode.name, 0)) {
-        new_tab_list_keepAlive.push(tabNode.name)
-      }
-      this.$store.commit('SET_KEEP_ALIVE', new_tab_list_keepAlive)
+    //   let tabNode = { title: '', path: '', menuorigin: '', component: '' }
+    //   for (let i = 0; i < this.aside_list.length; ++i) {
+    //     if (this.aside_list[i].index == keyPath[0] && keyPath.length > 1) {
+    //       this.aside_list[i].children.forEach(item => {
+    //         if (item.index == keyPath[1]) {
+    //           tabNode.title = item.title
+    //           tabNode.path = item.path
+    //           tabNode.menuorigin = item.menuorigin
+    //           tabNode.component = item.component || ''
+    //           tabNode.key = key
+    //           tabNode.keyPath = keyPath
+    //           tabNode.name = item.name
+    //           return
+    //         }
+    //       })
+    //     } else if (this.aside_list[i].index == keyPath[0] && keyPath.length == 1) {
+    //       tabNode.title = this.aside_list[i].title
+    //       tabNode.path = this.aside_list[i].path
+    //       tabNode.menuorigin = this.aside_list[i].menuorigin
+    //       tabNode.component = this.aside_list[i].component || ''
+    //       tabNode.key = key
+    //       tabNode.keyPath = keyPath
+    //       tabNode.name = this.aside_list[i].name
+    //       break
+    //     }
+    //   }
+    //   this.addTab(tabNode)
+    // },
+    // addTab(tabNode) {
+    //   //修改缓存信息
+    //   let new_tab_list_keepAlive = this.$store.getters.keepAliveTagsList
+    //   if (!new_tab_list_keepAlive.includes(tabNode.name, 0)) {
+    //     new_tab_list_keepAlive.push(tabNode.name)
+    //   }
+    //   this.$store.commit('SET_KEEP_ALIVE', new_tab_list_keepAlive)
 
-      //判断当前tab是否已存在，若存在，则直接激活即可
-      let is_Existed = false
-      this.$my_tag_list.forEach(item => {
-        if (item.title == tabNode.title) {
-          is_Existed = true
-          item.isShow = 'true'
-        } else {
-          item.isShow = 'false'
-        }
-      })
+    //   //判断当前tab是否已存在，若存在，则直接激活即可
+    //   let is_Existed = false
+    //   this.$my_tag_list.forEach(item => {
+    //     if (item.title == tabNode.title) {
+    //       is_Existed = true
+    //       item.isShow = 'true'
+    //     } else {
+    //       item.isShow = 'false'
+    //     }
+    //   })
 
-      if (is_Existed) {
-        this.$set(this.$my_editableTabsValue, 'active-tab', tabNode.title)
+    //   if (is_Existed) {
+    //     this.$set(this.$my_editableTabsValue, 'active-tab', tabNode.title)
 
-        if (tabNode.menuorigin == 'local') {
-          this.$router.push(tabNode.path)
-        }
+    //     if (tabNode.menuorigin == 'local') {
+    //       this.$router.push(tabNode.path)
+    //     }
 
-        return
-      }
-      //当前tab不存在，添加新的tab页，并激活
-      let content = ''
-      if (tabNode.menuorigin == 'local') {
-        this.$router.push(tabNode.path)
-      } else if (tabNode.menuorigin == 'remote') {
-        content = "<object type='text/html' data='" + tabNode.path + "' width='100%' height='100%'></object>"
-      }
+    //     return
+    //   }
+    //   //当前tab不存在，添加新的tab页，并激活
+    //   let content = ''
+    //   if (tabNode.menuorigin == 'local') {
+    //     this.$router.push(tabNode.path)
+    //   } else if (tabNode.menuorigin == 'remote') {
+    //     content = "<object type='text/html' data='" + tabNode.path + "' width='100%' height='100%'></object>"
+    //   }
 
-      this.$my_tag_list.push({
-        title: tabNode.title,
-        name: tabNode.name,
-        content: content,
-        menuorigin: tabNode.menuorigin,
-        path: tabNode.path,
-        key: tabNode.key,
-        keyPath: tabNode.keyPath,
-        isShow: 'true'
-      })
+    //   this.$my_tag_list.push({
+    //     title: tabNode.title,
+    //     name: tabNode.name,
+    //     content: content,
+    //     menuorigin: tabNode.menuorigin,
+    //     path: tabNode.path,
+    //     key: tabNode.key,
+    //     keyPath: tabNode.keyPath,
+    //     isShow: 'true'
+    //   })
 
-      this.$set(this.$my_editableTabsValue, 'active-tab', tabNode.title)
-    },
+    //   this.$set(this.$my_editableTabsValue, 'active-tab', tabNode.title)
+    // },
     // 通过子节点找到祖宗节点
-    searchMainTabName(root, target, array, searchResult) {
-      let _this = this
-      if (searchResult.flag) {
-        return
-      }
-      if (root.title == target) {
-        array.push(root)
-        this.$set(searchResult, 'flag', true)
-        return
-      } else {
-        array.push(root)
-        let children = root.children
-        if (children != undefined && children != null) {
-          children.forEach(item => {
-            _this.searchMainTabName(item, target, array, searchResult)
-          })
-          if (!searchResult.flag) {
-            array.pop()
-          }
-        } else {
-          array.pop()
-          return
-        }
-      }
-    }
+    // searchMainTabName(root, target, array, searchResult) {
+    //   let _this = this
+    //   if (searchResult.flag) {
+    //     return  
+    //   }
+    //   if (root.title == target) {
+    //     array.push(root)
+    //     this.$set(searchResult, 'flag', true)
+    //     return
+    //   } else {
+    //     array.push(root)
+    //     let children = root.children
+    //     if (children != undefined && children != null) {
+    //       children.forEach(item => {
+    //         _this.searchMainTabName(item, target, array, searchResult)
+    //       })
+    //       if (!searchResult.flag) {
+    //         array.pop()
+    //       }
+    //     } else {
+    //       array.pop()
+    //       return
+    //     }
+    //   }
+    // }
   },
   computed: {
-    keepAliveTagsList() {
-      return this.$store.getters.keepAliveTagsList
-    }
+    // keepAliveTagsList() {
+    //   return this.$store.getters.keepAliveTagsList
+    // }
+  },
+  created(){
+    
+    
   }
 }
 </script>
@@ -362,7 +322,7 @@ export default {
   height: 100%;
 }
 .el-header {
-  background-color: #1280fe;
+  background-color: #396FFF;
   display: flex;
   justify-content: space-between;
   padding-left: 0;
@@ -381,15 +341,13 @@ export default {
   .el-menu {
     border-right: none;
   }
-  border: 1px !important;
-  border-style: solid !important;
-  border-color: #797979 !important;
+  // border-right: 1px solid #C7CEDA;
 
   //border-color: #C7CEDA !important;
 }
 .img-home-logo {
-  width: 49px;
-  height: 34px;
+  width: 190px;
+  height: inherit;
 }
 .icom {
   margin-right: 10px;

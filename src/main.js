@@ -2,12 +2,14 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from "@/store"
-import './plugins/element.js'
+
 // 导入全局样式表
 import './assets/css/global.css'
 import axios from 'axios'
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 
-
+Vue.use(ElementUI);
 
 const my_tag_list = [];
 const my_editableTabsValue = { "active-tab": '' };
