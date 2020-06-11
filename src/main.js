@@ -18,6 +18,8 @@ Vue.prototype.$my_tag_list = my_tag_list;
 Vue.prototype.$my_editableTabsValue = my_editableTabsValue;
 // 配置请求的跟路径
 //axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
+// axios.defaults.baseURL = '/api'  //关键代码
+// axios.defaults.baseURL ='/192.168.50.90:8000'
 Vue.config.productionTip = false
 Vue.prototype.$ajax = axios
 new Vue({

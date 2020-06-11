@@ -396,6 +396,9 @@ export default {
   overflow: auto;
   box-sizing: border-box;
   padding: 0px !important;
+    &::-webkit-scrollbar {
+      display: none;
+    }
 }
 .el-tab-pane {
   //position: absolute;

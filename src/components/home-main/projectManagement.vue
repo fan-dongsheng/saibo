@@ -42,13 +42,14 @@
             <el-input v-model="addfolderDialog.form.name" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="数据集存储地址:" >
+            <input type="file" :id="id" name="image" class="getImgUrl_file" @change="preview($event)">
             <el-upload class="upload"  action :http-request="dataUpload" :on-success="success">
           <!-- <div class="up">
             <i class="el-icon-plus avatar-uploader-icon"></i>
             <div class="el-upload__text">点击上传</div>
           </div> -->
 
-          <el-button type="primary">点击上传</el-button>
+          <!-- <el-button type="primary">点击上传</el-button> -->
         </el-upload>
             <!-- <el-input v-model="addfolderDialog.form.dataPath" autocomplete="off"></el-input> -->
           </el-form-item>
@@ -69,10 +70,13 @@
   </div>
 </template>
 
+<script src="http://192.168.50.90:8000/pm_getProjectList"></script>
 <script>
 export default {
   data() {
     return {
+      id:'',
+      imgDataUrl:'',
       dataParams:{}, //上传文件file参数
       modelParams:{},
       //新增项目弹层
@@ -98,20 +102,6 @@ export default {
           figure: '',
           atlas: '',
           description: '123131'
-        },
-        {
-          name: '质量图谱',
-          data: '',
-          figure: '',
-          atlas: '',
-          description: '123131'
-        },
-        {
-          name: '质量图谱',
-          data: '',
-          figure: '',
-          atlas: '',
-          description: '123131'
         }
       ],
       count: '', // 总页数
@@ -122,7 +112,26 @@ export default {
       }
     }
   },
+
   methods: {
+    //获取list
+    async getProjectList(){
+      const {data}=await this.$ajax({
+        url:'/hehe/pm_getProjectList'
+      })
+      console.log(data,'获取list')
+      this.tableProject=data.map((item,i)=>{
+        return {
+          name:item[0],
+          data:item[1],
+          figure:item[2]
+        }
+        
+      })
+      console.log(this.tableProject);
+      this.page.total=data.length
+      
+    },
     success(event, file, fileList){
 console.log(event, file, fileList,'1111');
 
@@ -139,15 +148,15 @@ console.log(event, file, fileList,'1111');
     // 上传
     async onSubmit() {
       console.log('上传')
-      console.log(this.form.name)
+      console.log(this.addfolderDialog.form.name)
       // ,将id和form{}直接传到ajax后,重新调用请求接口就可以;
       let formData = new FormData()
-      formData.append('name', this.form.name)
+      formData.append('name', this.addfolderDialog.form.name)
       //文件参数
-      formData.append('file', this.dataParams.file)
-      formData.append('file', this.modelParams.file)
+      formData.append('datapath', this.dataParams.file)
+      formData.append('modelpath', this.modelParams.file)
       // this.formData = formData
-      const res = await $$Guid.addGuid(formData)
+      const res = await this.$ajax.post(formData)
       this.$message.success('上传成功')
       console.log(res, '新增成功')
       
@@ -181,6 +190,8 @@ console.log(event, file, fileList,'1111');
     //新增项目
     handelAddfolder() {
       this.addfolderDialog.loading = true
+      this.onSubmit()
+      this.addfolderDialog.loading = false
     },
     // 展示新增项目弹窗
     showAddfolderDialog() {
@@ -195,6 +206,9 @@ console.log(event, file, fileList,'1111');
 
       //掉接口
     }
+  },
+  created(){
+ this.getProjectList()
   }
 }
 </script>
