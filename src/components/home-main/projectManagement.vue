@@ -24,7 +24,7 @@
         :current-page="page.currentPage"
         :total="page.total"
         @current-change="getCurrentPage"
-        
+       
       ></el-pagination>
     </div>
     </el-card>
@@ -42,14 +42,14 @@
             <el-input v-model="addfolderDialog.form.name" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="数据集存储地址:" >
-            <input type="file" :id="id" name="image" class="getImgUrl_file" @change="preview($event)">
+            <!-- <input type="file" :id="id" name="image" class="getImgUrl_file" @change="preview($event)"> -->
             <el-upload class="upload"  action :http-request="dataUpload" :on-success="success">
           <!-- <div class="up">
             <i class="el-icon-plus avatar-uploader-icon"></i>
             <div class="el-upload__text">点击上传</div>
           </div> -->
 
-          <!-- <el-button type="primary">点击上传</el-button> -->
+          <el-button type="primary">点击上传</el-button>
         </el-upload>
             <!-- <el-input v-model="addfolderDialog.form.dataPath" autocomplete="off"></el-input> -->
           </el-form-item>
@@ -70,7 +70,6 @@
   </div>
 </template>
 
-<script src="http://192.168.50.90:8000/pm_getProjectList"></script>
 <script>
 export default {
   data() {
@@ -116,8 +115,12 @@ export default {
   methods: {
     //获取list
     async getProjectList(){
-      const {data}=await this.$ajax({
-        url:'/hehe/pm_getProjectList'
+      
+      try {
+        this.tableLoading=true
+        const {data}=await this.$ajax({
+        url:'/hehe/pm_getProjectList',
+        
       })
       console.log(data,'获取list')
       this.tableProject=data.map((item,i)=>{
@@ -128,8 +131,14 @@ export default {
         }
         
       })
+      this.tableLoading=false
       console.log(this.tableProject);
       this.page.total=data.length
+      } catch (error) {
+        console.log(error,'获取数据失败');
+        this.tableLoading=false
+      }
+      
       
     },
     success(event, file, fileList){
@@ -139,24 +148,25 @@ console.log(event, file, fileList,'1111');
     //上传文件
     dataUpload(params) {
       console.log(params)
-      this.dataParams = params
+      this.dataParams = params.file
     },
     modelUpload(params) {
       console.log(params)
-      this.modelParams = params
+      this.modelParams = params.file
     },
     // 上传
     async onSubmit() {
-      console.log('上传')
-      console.log(this.addfolderDialog.form.name)
+      // console.log('上传')
+      // console.log(this.addfolderDialog.form.name)
       // ,将id和form{}直接传到ajax后,重新调用请求接口就可以;
-      let formData = new FormData()
-      formData.append('name', this.addfolderDialog.form.name)
-      //文件参数
-      formData.append('datapath', this.dataParams.file)
-      formData.append('modelpath', this.modelParams.file)
+      // let formData = new FormData()
+      // formData.append('name', this.addfolderDialog.form.name)
+      // //文件参数
+      // formData.append('datapath', this.dataParams.file)
+      // formData.append('modelpath', this.modelParams.file)
       // this.formData = formData
-      const res = await this.$ajax.post(formData)
+      // const res = await this.$ajax.post(formData)
+
       this.$message.success('上传成功')
       console.log(res, '新增成功')
       
@@ -188,10 +198,38 @@ console.log(event, file, fileList,'1111');
       console.log(index, row)
     },
     //新增项目
-    handelAddfolder() {
-      this.addfolderDialog.loading = true
-      this.onSubmit()
+    async handelAddfolder() {
+      this.$refs.addfolderForm.validate(async (valid)=>{
+        if (valid) {
+          try {
+       this.addfolderDialog.loading = true
+      // let dataUp={
+      //   name:this.addfolderDialog.form.name,
+      //   datapath:`/home/gnx/${this.dataParams.name}`,
+      //   modelpath:`/home/gnx/${this.modelParams.name}`
+      // }
+      console.log(this.dataParams.name,this.modelParams.name);
+      
+      const res=await this.$ajax({
+      url:`/hehe/pm_addProject?name=${this.addfolderDialog.form.name}&datapath=${`/home/gnx/${this.dataParams.name}`}&modelpath=${`/home/gnx/${this.modelParams.name}`}`
+      })
+      console.log(res,'add');
+      this.$message.success('保存成功')
+      this.addfolderDialog.visible = false
       this.addfolderDialog.loading = false
+      this.getProjectList()
+          } catch (error) {
+            console.log(error,'新增失败');
+              this.addfolderDialog.loading = false
+          }
+
+          } else {
+            console.log('error submit!!');
+              this.addfolderDialog.loading = false
+            return false;
+          }
+      })
+     
     },
     // 展示新增项目弹窗
     showAddfolderDialog() {

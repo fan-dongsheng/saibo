@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from "@/store"
-
+import echarts from 'echarts'
 // 导入全局样式表
 import './assets/css/global.css'
 import axios from 'axios'
@@ -22,6 +22,7 @@ Vue.prototype.$my_editableTabsValue = my_editableTabsValue;
 // axios.defaults.baseURL ='/192.168.50.90:8000'
 Vue.config.productionTip = false
 Vue.prototype.$ajax = axios
+Vue.prototype.$echarts = echarts;
 new Vue({
     router,
 

@@ -106,194 +106,7 @@ export default {
   },
   components: {},
   methods: {
-    // 保存链接的激活状态
-    // saveNavState(activePath) {
-    //   window.sessionStorage.setItem('activePath', activePath)
-    //   this.activePath = activePath
-    // },
-    // /**
-    //  * 移除Tab
-    //  * @param targetName
-    //  */
-    // removeTab(targetName) {
-    //   // 记录移除标签的index
-    //   let targetIndex = 0
-    //   for (; targetIndex < this.editableTabs.length; ++targetIndex) {
-    //     if (this.editableTabs[targetIndex].title == targetName) {
-    //       break
-    //     }
-    //   }
-    //   //如果移除的是当前Tab页，则激活当前页的上页或下页
-    //   if (this.editableTabsValue['active-tab'] === targetName) {
-    //     let nextTab = this.editableTabs[targetIndex + 1] || this.editableTabs[targetIndex - 1]
-    //     if (nextTab) {
-    //       //当前页并非最后一个tab页
-    //       //删除目标页
-    //       this.editableTabs.splice(targetIndex, 1)
-    //       //调用子组件的方法，激活下一页
-    //       this.clickTab({ name: nextTab.title })
-    //     } else {
-    //       //当前页是最后一个tab页
-    //       //只需要 删除目标页
-    //       this.editableTabs.splice(targetIndex, 1)
-    //     }
-    //   } else {
-    //     ///如果移除的不是当前Tab页，只需要 删除目标页
-    //     this.editableTabs.splice(targetIndex, 1)
-    //   }
-    // },
-    /*
-           点击当前页
-            */
-    // clickTab(tab) {
-    //   let _this = this
-
-    //   //查找主Tab的名称
-    //   let childrenNode = _this.aside_list.concat()
-    //   let tempData = { id: 0, title: '', children: childrenNode }
-    //   let array = []
-    //   let searchResult = { flag: false }
-
-    //   this.searchMainTabName(tempData, tab.name, array, searchResult)
-
-    //   //激活当前页所在的主Tab页
-    //   _this.mainHandleSelected(array[1].index, [array[1].index])
-    //   //选中当前页所在的左侧菜单栏的
-    //   let key = ''
-    //   let keyPath = ''
-
-    //   for (let i = 0; i < _this.editableTabs.length; ++i) {
-    //     if (_this.editableTabs[i].title == tab.name) {
-    //       key = _this.editableTabs[i].key
-    //       keyPath = _this.editableTabs[i].keyPath
-    //       break
-    //     }
-    //   }
-
-    //   _this.handleSelected(key, keyPath)
-    // },
-    //切换子菜单
-    // mainHandleSelected: function(key, keyPath, node, aside_list) {
-    //   if (aside_list == undefined) {
-    //     aside_list = this.aside_list
-    //   }
-    //   for (let i = 0; i < aside_list.length; ++i) {
-    //     if (aside_list[i].index == key) {
-    //       //this.aside_list = aside_list[i].children
-    //       this.MainTitle = aside_list[i].title
-    //       break
-    //     }
-    //   }
-    //   //this.collapse = true
-    // },
-    //左侧菜单栏选中
-    // handleSelected: function(key, keyPath) {
-    //   // this.default_active_index = key
-    //   this.$set(this.default_active_index, 'active', key)
-
-    //   let tabNode = { title: '', path: '', menuorigin: '', component: '' }
-    //   for (let i = 0; i < this.aside_list.length; ++i) {
-    //     if (this.aside_list[i].index == keyPath[0] && keyPath.length > 1) {
-    //       this.aside_list[i].children.forEach(item => {
-    //         if (item.index == keyPath[1]) {
-    //           tabNode.title = item.title
-    //           tabNode.path = item.path
-    //           tabNode.menuorigin = item.menuorigin
-    //           tabNode.component = item.component || ''
-    //           tabNode.key = key
-    //           tabNode.keyPath = keyPath
-    //           tabNode.name = item.name
-    //           return
-    //         }
-    //       })
-    //     } else if (this.aside_list[i].index == keyPath[0] && keyPath.length == 1) {
-    //       tabNode.title = this.aside_list[i].title
-    //       tabNode.path = this.aside_list[i].path
-    //       tabNode.menuorigin = this.aside_list[i].menuorigin
-    //       tabNode.component = this.aside_list[i].component || ''
-    //       tabNode.key = key
-    //       tabNode.keyPath = keyPath
-    //       tabNode.name = this.aside_list[i].name
-    //       break
-    //     }
-    //   }
-    //   this.addTab(tabNode)
-    // },
-    // addTab(tabNode) {
-    //   //修改缓存信息
-    //   let new_tab_list_keepAlive = this.$store.getters.keepAliveTagsList
-    //   if (!new_tab_list_keepAlive.includes(tabNode.name, 0)) {
-    //     new_tab_list_keepAlive.push(tabNode.name)
-    //   }
-    //   this.$store.commit('SET_KEEP_ALIVE', new_tab_list_keepAlive)
-
-    //   //判断当前tab是否已存在，若存在，则直接激活即可
-    //   let is_Existed = false
-    //   this.$my_tag_list.forEach(item => {
-    //     if (item.title == tabNode.title) {
-    //       is_Existed = true
-    //       item.isShow = 'true'
-    //     } else {
-    //       item.isShow = 'false'
-    //     }
-    //   })
-
-    //   if (is_Existed) {
-    //     this.$set(this.$my_editableTabsValue, 'active-tab', tabNode.title)
-
-    //     if (tabNode.menuorigin == 'local') {
-    //       this.$router.push(tabNode.path)
-    //     }
-
-    //     return
-    //   }
-    //   //当前tab不存在，添加新的tab页，并激活
-    //   let content = ''
-    //   if (tabNode.menuorigin == 'local') {
-    //     this.$router.push(tabNode.path)
-    //   } else if (tabNode.menuorigin == 'remote') {
-    //     content = "<object type='text/html' data='" + tabNode.path + "' width='100%' height='100%'></object>"
-    //   }
-
-    //   this.$my_tag_list.push({
-    //     title: tabNode.title,
-    //     name: tabNode.name,
-    //     content: content,
-    //     menuorigin: tabNode.menuorigin,
-    //     path: tabNode.path,
-    //     key: tabNode.key,
-    //     keyPath: tabNode.keyPath,
-    //     isShow: 'true'
-    //   })
-
-    //   this.$set(this.$my_editableTabsValue, 'active-tab', tabNode.title)
-    // },
-    // 通过子节点找到祖宗节点
-    // searchMainTabName(root, target, array, searchResult) {
-    //   let _this = this
-    //   if (searchResult.flag) {
-    //     return  
-    //   }
-    //   if (root.title == target) {
-    //     array.push(root)
-    //     this.$set(searchResult, 'flag', true)
-    //     return
-    //   } else {
-    //     array.push(root)
-    //     let children = root.children
-    //     if (children != undefined && children != null) {
-    //       children.forEach(item => {
-    //         _this.searchMainTabName(item, target, array, searchResult)
-    //       })
-    //       if (!searchResult.flag) {
-    //         array.pop()
-    //       }
-    //     } else {
-    //       array.pop()
-    //       return
-    //     }
-    //   }
-    // }
+    
   },
   computed: {
     // keepAliveTagsList() {
@@ -323,13 +136,11 @@ export default {
 .overflow_h{
   overflow-y:hidden;
 }
-.home-container {
-  height: 100%;
-}
+
 .el-header {
   background-color: #396FFF;
   display: flex;
-  justify-content: space-between;
+  
   padding-left: 0;
   align-items: center;
   color: #fff;
@@ -366,30 +177,8 @@ export default {
   width: 23px;
   height: 23px;
 }
-.el-tabs--border-card > .el-tabs__content {
-  padding: 0px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  //position: absolute; 
-  width: 100%;
- // top: 29px;
-  bottom: 0px;
-}
-#innerTab .el-tabs__content {  
-  box-sizing: border-box;
-  min-height: 100% ;
-  max-height: auto;
-  //height: 100% ;
-  overflow-y: hidden !important;
-}
-.localTabDiv {
-  height: 98%;
-  width: 99.4%;
- // padding-top: 5px;
-  padding-left: 10px;
-  overflow-y: auto;
-}
 .el-main {
+  height: calc(100vh - 80px);
   display: block;
   flex: 1;
   flex-basis: auto;
@@ -400,15 +189,7 @@ export default {
       display: none;
     }
 }
-.el-tab-pane {
-  //position: absolute;
-  width: 100%;
-  top: 0px;
-  bottom: 0px;
-}
-.el-tabs--card>.el-tabs__header{
-  border-bottom: 2px solid #B1D2FF !important;
-}
+
 </style>
 
 
