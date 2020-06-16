@@ -11,7 +11,7 @@
           </template>
         </el-table-column>
         <!-- <el-table-column prop="data" label="数据集"></el-table-column> -->
-        <el-table-column prop="figure" label="本体图"></el-table-column>
+        
          <el-table-column label="本体图">
           <template slot-scope="scope" class>
             <el-button size="mini" type="text" >{{scope.row.figure}}</el-button>
@@ -24,7 +24,7 @@
           <template slot-scope="scope" class>
             <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
             <el-button size="mini" type="text" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-            <el-button size="mini" type="text" @click="handleDown(scope.$index, scope.row)">导出</el-button>
+            <!-- <el-button size="mini" type="text" @click="handleDown(scope.$index, scope.row)">导出</el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -179,7 +179,7 @@ export default {
   methods: {
     //点击文件名跳转详情页
     pushDetail(index,row){
-this.$router.push(`/dataManagement/${row.data}`)
+this.$router.push(`/dataManagement/${row.name}`)
     },
     //获取list
     async getProjectList(){

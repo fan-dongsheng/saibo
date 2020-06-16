@@ -24,7 +24,7 @@
             <!-- 一级菜单的模板区域 -->
             <template slot="title">
               <!-- 图标 -->
-              <img :src="require('../images/'+item.icon+'.png')" class="icom" />
+              <img :src="require('../assets/indexNew/'+item.icon+'.png')" class="icom" />
 
               <span>{{item.title}}</span>
             </template>
@@ -58,7 +58,7 @@ export default {
           index: 'projectManagement',
           title: '项目管理',
           name: 'projectManagement',
-          icon: 'u228',
+          icon: 'icon1',
           component: '@/components/projectManagement.vue',
           path: 'projectManagement',
           menuorigin: 'local'
@@ -67,7 +67,7 @@ export default {
           index: 'dataManagement',
           title: '数据管理',
           name: 'dataManagement',
-          icon: 'u196',
+          icon: 'icon2',
           component: '@/components/dataManagement.vue',
           path: 'dataManagement',
           menuorigin: 'local'
@@ -76,7 +76,7 @@ export default {
           index: 'modelManagement',
           title: '模型管理',
           name: 'modelManagement',
-          icon: 'u194',
+          icon: 'icon3',
           component: '@/components/modelManagement.vue',
           path: 'modelManagement',
           menuorigin: 'local'
@@ -85,7 +85,7 @@ export default {
           index: 'dataImport',
           title: '数据导入',
           name: 'dataImport',
-          icon: 'u200',
+          icon: 'icon4',
           component: '@/components/dataImport.vue',
           path: 'dataImport',
           menuorigin: 'local'

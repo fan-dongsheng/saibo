@@ -37,6 +37,13 @@ const routes = [
             }
             ,
             {
+                path: 'dataManagement/:name/:extract',
+                name: 'dataManagement',
+                component: () =>
+                    import ('@/components/home-main/extract.vue')       
+            }
+            ,
+            {
                 path: 'dataImport',
                 name: 'dataImport',
                 component: () =>
