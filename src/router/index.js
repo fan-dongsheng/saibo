@@ -26,10 +26,15 @@ const routes = [
                 path: 'dataManagement',
                 name: 'dataManagement',
                 component: () =>
-                    import ('@/components/home-main/dataManagement.vue')
-                   
+                    import ('@/components/home-main/dataManagement.vue')       
             }
-            
+            ,
+            {
+                path: 'dataManagement/:name',
+                name: 'dataManagement',
+                component: () =>
+                    import ('@/components/home-main/dataManagement.vue')       
+            }
             ,
             {
                 path: 'dataImport',
@@ -46,13 +51,13 @@ const routes = [
                     import ('@/components/home-main/modelManagement.vue')
                    
             },
-            {
-                path: 'mapQuiz',
-                name: 'mapQuiz',
-                component: () =>
-                    import ('@/components/home-main/mapQuiz.vue')
+            // {
+            //     path: 'mapQuiz',
+            //     name: 'mapQuiz',
+            //     component: () =>
+            //         import ('@/components/home-main/mapQuiz.vue')
                    
-            }
+            // }
             
         ]
     }

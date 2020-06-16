@@ -20,7 +20,7 @@
          :default-active="$route.path"
         >
           
-          <el-menu-item :index="`/${item.index}`" v-for="item in aside_list" :key="item.index">
+          <el-menu-item :index="`/${item.index}`" v-for="item in aside_list" :key="item.index" >
             <!-- 一级菜单的模板区域 -->
             <template slot="title">
               <!-- 图标 -->
@@ -90,15 +90,15 @@ export default {
           path: 'dataImport',
           menuorigin: 'local'
         },
-        {
-          index: 'mapQuiz',
-          title: '图谱问答',
-          name: 'mapQuiz',
-          icon: 'u196',
-          component: '@/components/mapQuiz.vue',
-          path: 'mapQuiz',
-          menuorigin: 'local'
-        },
+        // {
+        //   index: 'mapQuiz',
+        //   title: '图谱问答',
+        //   name: 'mapQuiz',
+        //   icon: 'u196',
+        //   component: '@/components/mapQuiz.vue',
+        //   path: 'mapQuiz',
+        //   menuorigin: 'local'
+        // },
       ],
       // 左侧菜单数据
       menulist: []

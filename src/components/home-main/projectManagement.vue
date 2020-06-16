@@ -4,8 +4,20 @@
     <el-card v-loading="tableLoading">
       <el-table :data="tableProject" style="width: 100%">
         <el-table-column prop="name" label="项目名称"></el-table-column>
-        <el-table-column prop="data" label="数据集"></el-table-column>
+        <el-table-column label="数据集">
+          <template slot-scope="scope" class>
+            <el-button size="mini" type="text" @click="pushDetail(scope.$index, scope.row)">{{scope.row.data}}</el-button>
+            
+          </template>
+        </el-table-column>
+        <!-- <el-table-column prop="data" label="数据集"></el-table-column> -->
         <el-table-column prop="figure" label="本体图"></el-table-column>
+         <el-table-column label="本体图">
+          <template slot-scope="scope" class>
+            <el-button size="mini" type="text" >{{scope.row.figure}}</el-button>
+            
+          </template>
+        </el-table-column>
         <el-table-column prop="atlas" label="图谱"></el-table-column>
         <el-table-column prop="description" label="备注"></el-table-column>
         <el-table-column label="操作">
@@ -67,11 +79,48 @@
         </div>
       </div>
     </el-dialog>
+    <!-- 修改项目 -->
+    <el-dialog width="600px" title="修改项目" :visible.sync="editfolderDialog.visible">
+      <div v-loading="editfolderDialog.loading" class="dialog-wrapper">
+        <el-form
+          label-width="150px"
+          ref="editfolderForm"
+          :model="editfolderDialog.form"
+          :rules="editfolderDialog.rules"
+          size="mini"
+        >
+          <el-form-item label="项目名称:" prop="name" >
+            <el-input v-model="editfolderDialog.form.name" autocomplete="off" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="数据集存储地址:" >           
+            <el-upload class="upload"  action :http-request="dataUpload" :on-success="success">        
+          <el-button type="primary">点击上传</el-button>
+        </el-upload>         
+          </el-form-item>
+          <el-form-item label="模型存储地址:" >
+            <el-upload class="upload"  action :http-request="modelUpload">
+          <el-button type="primary">点击上传</el-button>
+        </el-upload>         
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button size="mini" type="primary" @click="handeleditfolder">保 存</el-button>
+          <el-button size="mini" @click="editfolderDialog.visible = false">取 消</el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 export default {
+  /**
+ * @author: dsvan
+ * @date: 2020年6月09日14:51:40
+ * @Last Modified by: dsvan
+ * @Last Modified time: 2020-05-01 09:31:30
+ * @description: 项目管理
+ */
   data() {
     return {
       id:'',
@@ -93,11 +142,26 @@ export default {
           // modelPath: [{ required: true, message: '请输入描述模型存储地址', trigger: 'blur' }]
         }
       },
+       //编辑项目弹层
+      editfolderDialog: {
+        loading: false,
+        visible: false,
+        form: {
+          name: '', // 项目名称
+          dataPath: '', //数据集成位置
+          modelPath: '' //模型存储位置
+        },
+        rules: {
+          name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
+          // dataPath: [{ required: true, message: '请输入数据集存储地址', trigger: 'blur' }],
+          // modelPath: [{ required: true, message: '请输入描述模型存储地址', trigger: 'blur' }]
+        }
+      },
       tableLoading: false,
       tableProject: [
         {
           name: '质量图谱',
-          data: '',
+          data: 'a.txt',
           figure: '',
           atlas: '',
           description: '123131'
@@ -113,6 +177,10 @@ export default {
   },
 
   methods: {
+    //点击文件名跳转详情页
+    pushDetail(index,row){
+this.$router.push(`/dataManagement/${row.data}`)
+    },
     //获取list
     async getProjectList(){
       
@@ -171,17 +239,49 @@ console.log(event, file, fileList,'1111');
       console.log(res, '新增成功')
       
     },
+    //修改项目
     handleEdit(index, row) {
-      console.log(index, row)
+      console.log(row);
+      
+      this.editfolderDialog.visible=true
+      this.editfolderDialog.form=row
     },
+    //修改项目
+    async handeleditfolder(){
+      try {
+        const res= await this.$ajax({
+        url:`/hehe/pm_modProject`,
+        params:this.editfolderDialog.form
+      })
+     
+      this.editfolderDialog.visible=false
+      this.$message.success('修改成功')
+      this.getProjectList()
+      } catch (error) {
+        this.$message.error('修改失败')
+      }
+      
+      
+    },
+    //删除项目
     handleDelete(index, row) {
-      console.log(index, row)
+      
       this.$confirm('您确定要删除此项目吗, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
+          const res= this.$ajax({
+            url:`/hehe/pm_delProject`,
+            params:{
+              key:row.name
+            }
+
+          })
+          this.getProjectList()
+          console.log(res,'删除成功');
+          
           this.$message({
             type: 'success',
             message: '删除成功!'
