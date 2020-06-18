@@ -1,8 +1,13 @@
 <template>
   <div class="extract">
-     <el-button type="primary" size="medium" style="margin:24px;margin-bottom:0" @click="$router.back()">上一步</el-button>
+    <el-button
+      type="primary"
+      size="medium"
+      style="margin:24px;margin-bottom:0"
+      @click="$router.back()"
+    >上一步</el-button>
     <div class="left" v-if="$route.params.extract==='抽取'">
-      <el-card class="crd" v-loading='EartLoading'>
+      <el-card class="crd" v-loading="EartLoading">
         <div slot="header" class="clearfix">
           <div class="title">实体生成</div>
         </div>
@@ -22,7 +27,7 @@
         </div>
         <div class="card1">
           <div class="bus">
-            <div class="box"  v-for="item in figureList" :key="item.id">
+            <div class="box" v-for="item in figureList" :key="item.id">
               <div class="text">{{ item.name }}</div>
               <div class="line"></div>
               <div class="icon"></div>
@@ -36,7 +41,7 @@
 
       <div class="cont">
         <!-- <span class="title">a.txt标注补充</span> -->
-        <el-card v-loading='marLoading'>
+        <el-card v-loading="marLoading">
           <div
             class="cont-mak"
             v-for="(item,index) in markList"
@@ -52,8 +57,10 @@
         <!-- //右侧的列表展示 -->
         <el-card class="list">
           <div class="list-cont" v-for="(item,index) in listMark" :key="index">
-            <div v-html="item"></div>
-            <i class="el-icon-close" @click="delLis(item,index)"></i>
+            <div class="a" v-for="(val,key,i) in item" :key="i" :style="`background-color:${val}`">
+              {{key}}
+              <i class="el-icon-close" @click="delLis(item,index)"></i>
+            </div>
           </div>
         </el-card>
       </div>
@@ -65,12 +72,18 @@
 export default {
   data() {
     return {
-      marLoading:false, //标记loading
-      EartLoading:false,//实体loading
+      marLoading: false, //标记loading
+      EartLoading: false, //实体loading
       //标注文件
       markList: [
-       {text: "中国第一款陆基超音速巡航导弹长剑-100", ns: ["中国"], nr: ["剑-1"], nt: []}
-        
+        { text: '中国第一款陆基超音速巡航导弹长剑-100', ns: ['中国'], nr: ['剑-1'], nt: [] },
+        { text: '中国第一款陆基超音速巡航导弹长剑-100', ns: ['中国'], nr: ['剑-1'], nt: [] },
+        { text: '中国第一款陆基超音速巡航导弹长剑-100', ns: ['中国'], nr: ['剑-1'], nt: [] },
+        { text: '中国第一款陆基超音速巡航导弹长剑-100', ns: ['中国'], nr: ['剑-1'], nt: [] },
+        { text: '中国第一款陆基超音速巡航导弹长剑-100', ns: ['中国'], nr: ['剑-1'], nt: [] },
+        { text: '中国第一款陆基超音速巡航导弹长剑-100', ns: ['中国'], nr: ['剑-1'], nt: [] },
+        { text: '中国第一款陆基超音速巡航导弹长剑-100', ns: ['中国'], nr: ['剑-1'], nt: [] },
+        { text: '中国第一款陆基超音速巡航导弹长剑-100', ns: ['中国'], nr: ['剑-1'], nt: [] }
       ],
       teamList: [],
       figureList: [
@@ -90,49 +103,45 @@ export default {
   },
   methods: {
     //标注结果
-   async markResult(){
-     this.marLoading=true
-     try {
-       const {data}=await this.$ajax({
-        url:'/hehe/fm_labelSave',
-        params:{
-          filepath:`${this.$route.query.dataPath}/tmp/test02.txt`
-        }
-      })
-      this.marLoading=false
-      console.log(data,'标注结果');
-      this.markList=data
-      this.regs()
-     } catch (error) {
-       this.marLoading=false
-       this.$message.error('获取标注失败')
-     }
-
+    async markResult() {
+      this.marLoading = true
+      try {
+        const { data } = await this.$ajax({
+          url: '/hehe/fm_labelSave',
+          params: {
+            filepath: `${this.$route.query.dataPath}/tmp/test02.txt`
+          }
+        })
+        this.marLoading = false
+        console.log(data, '标注结果')
+        this.markList = data
+        this.regs()
+      } catch (error) {
+        this.marLoading = false
+        this.$message.error('获取标注失败')
+      }
     },
     //抽取结果
-    async exrtResult(){
-      
+    async exrtResult() {
       try {
-        this.EartLoading=true
-      const {data}=await this.$ajax({
-        url:'/hehe/fm_extract',
-        params:{
-          input_file:`${this.$route.query.dataPath}/test02.txt`
-        }
-      })
-      
-      console.log(data,'实体结果');
-      this.teamList=data
-      this.regs()
-      this.EartLoading=false
+        this.EartLoading = true
+        const { data } = await this.$ajax({
+          url: '/hehe/fm_extract',
+          params: {
+            input_file: `${this.$route.query.dataPath}/test02.txt`
+          }
+        })
+
+        console.log(data, '实体结果')
+        this.teamList = data
+        this.regs()
+        this.EartLoading = false
       } catch (error) {
-        console.log(error);
-        
-        this.EartLoading=false
+        console.log(error)
+
+        this.EartLoading = false
         this.$message.error('获取实体失败')
       }
-      
-      
     },
     //滑动取词
     getWord() {
@@ -159,17 +168,20 @@ export default {
     //正则改标签颜色 //点击标注
     regs(word) {
       var mark = this.markList
-
+      var bgNew = {} //新数组,
       mark.forEach((item, index) => {
-        console.log(item,'111111111111111');
-        
+        console.log(item, '111111111111111')
+
         if (item.nr) {
           var searchText = word ? word : item.nr[0]
           var text = item.text
           if (text.indexOf(searchText) >= 0) {
-            var bgColor = this.backGr()
+            if (typeof bgNew[searchText] == 'undefined') {
+              bgNew[searchText] = this.backGr()
+            }
+            var bgColor = bgNew[searchText]
             var text = text.replace(searchText, `<span style=background-color:${bgColor};>` + searchText + '</span>')
-            this.listMark.push(`<span style=background-color:${bgColor};>` + searchText + '</span>')
+            // this.listMark.push(`<span style=background-color:${bgColor};>` + searchText + '</span>')
           }
           mark[index].text = text
         }
@@ -178,45 +190,46 @@ export default {
           var searchText = item.ns[0] //需要搜索的字段
           var text = item.text // 每行文字
           if (text.indexOf(searchText) >= 0) {
-            var bgColor = this.backGr() //随机颜色调用
+            //判断对象中的建有没有值
+            if (typeof bgNew[searchText] == 'undefined') {
+              bgNew[searchText] = this.backGr()
+            }
+            var bgColor = bgNew[searchText] //随机颜色调用
             var text = text.replace(searchText, `<span style=background-color:${bgColor};>` + searchText + '</span>')
-            this.listMark.push(`<span style=background-color:${bgColor};>` + searchText + '</span>')
+            // this.listMark.push(`<span style=background-color:${bgColor};>` + searchText + '</span>')
           }
           mark[index].text = text
         }
       })
+
+      console.log(bgNew, 'ssssssssssssss')
+      this.listMark.push(bgNew)
     },
     //点击×删除右侧数组队列
     delLis(arrNow, index) {
-      console.log(arrNow);
+      console.log(arrNow)
       //只截取中文字符
       var reg = /[\u4e00-\u9fa5]/g
       var names = arrNow.match(reg)
-      var name = names.join("");
-      console.log(name,'汉子');
-      
+      var name = names.join('')
+      console.log(name, '汉子')
+
       //右侧数组删除
       this.listMark.splice(index, 1)
       //左侧的文章颜色取消
-      var oldTxt=this.markList
-      console.log(oldTxt,'old');
-      oldTxt.forEach((item,i)=>{
+      var oldTxt = this.markList
+      console.log(oldTxt, 'old')
+      oldTxt.forEach((item, i) => {
         var text = item.text // 每行文字
-         if (text.indexOf(name) >= 0) {
-            var text = text.replace(arrNow, `<span >` + name + '</span>')
-            console.log(text,'最新的text');
-            
-            
-          }
-           oldTxt[i].text = text
+        if (text.indexOf(name) >= 0) {
+          var text = text.replace(arrNow, `<span >` + name + '</span>')
+          console.log(text, '最新的text')
+        }
+        oldTxt[i].text = text
       })
-          
-     
 
       // oldTxt.replace(arrNow,)
       // var NewTxt=
-      
-    
     },
     open() {},
     toTeamInfo() {
@@ -224,11 +237,10 @@ export default {
     }
   },
   created() {
-    // this.regs()
-    console.log(this.$route);
+    this.regs()
+    console.log(this.$route)
     this.exrtResult()
     this.markResult()
-    
   }
 }
 </script>
@@ -333,10 +345,8 @@ export default {
         margin-left: 200px;
         width: 400px;
         .list-cont {
-          display: flex;
-          align-items: center;
-
-          height: 30px;
+          .a {
+          }
           .el-icon-close {
             margin-left: 30px;
             cursor: pointer;
