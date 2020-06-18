@@ -1,6 +1,6 @@
 <template>
   <el-container class="home-container">
-    <el-header style="height:80px;">
+    <el-header style="height:60px;">
       <div>
         <img src="../assets/logo.png" class="img-home-logo" alt />
         
@@ -17,7 +17,7 @@
           unique-opened
           :collapse-transition="false"
          router
-         :default-active="$route.path"
+         :default-active="$route.path.indexOf('dataManagement')>=0?'/dataManagement':$route.path"
         >
           
           <el-menu-item :index="`/${item.index}`" v-for="item in aside_list" :key="item.index" >

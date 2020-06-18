@@ -53,25 +53,34 @@
           <el-form-item label="项目名称:" prop="name">
             <el-input v-model="addfolderDialog.form.name" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="数据集存储地址:" >
+           <el-form-item label="数据集存储地址:" prop="dataPath" >
+            <el-input v-model="addfolderDialog.form.dataPath" autocomplete="off"></el-input>
+          </el-form-item>
+           <el-form-item label="模型存储地址:" prop="modelPath">
+            <el-input v-model="addfolderDialog.form.modelPath" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="描述:" >
+            <el-input v-model="addfolderDialog.form.description" autocomplete="off"></el-input>
+          </el-form-item>
+          <!-- <el-form-item label="数据集存储地址:" > -->
             <!-- <input type="file" :id="id" name="image" class="getImgUrl_file" @change="preview($event)"> -->
-            <el-upload class="upload"  action :http-request="dataUpload" :on-success="success">
+            <!-- <el-upload class="upload"  action :http-request="dataUpload" :on-success="success"> -->
           <!-- <div class="up">
             <i class="el-icon-plus avatar-uploader-icon"></i>
             <div class="el-upload__text">点击上传</div>
           </div> -->
 
-          <el-button type="primary">点击上传</el-button>
-        </el-upload>
+          <!-- <el-button type="primary">点击上传</el-button>
+        </el-upload> -->
             <!-- <el-input v-model="addfolderDialog.form.dataPath" autocomplete="off"></el-input> -->
-          </el-form-item>
-          <el-form-item label="模型存储地址:" >
+          <!-- </el-form-item> -->
+          <!-- <el-form-item label="模型存储地址:" >
             <el-upload class="upload"  action :http-request="modelUpload">
 
           <el-button type="primary">点击上传</el-button>
-        </el-upload>
+        </el-upload> -->
             <!-- <el-input v-model="addfolderDialog.form.modelPath" autocomplete="off"></el-input> -->
-          </el-form-item>
+          <!-- </el-form-item> -->
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" type="primary" @click="handelAddfolder">保 存</el-button>
@@ -92,7 +101,13 @@
           <el-form-item label="项目名称:" prop="name" >
             <el-input v-model="editfolderDialog.form.name" autocomplete="off" disabled></el-input>
           </el-form-item>
-          <el-form-item label="数据集存储地址:" >           
+           <el-form-item label="数据集存储地址:" prop="dataPath" >
+            <el-input v-model="addfolderDialog.form.dataPath" autocomplete="off"></el-input>
+          </el-form-item>
+           <el-form-item label="模型存储地址:" prop="modelPath">
+            <el-input v-model="addfolderDialog.form.modelPath" autocomplete="off"></el-input>
+          </el-form-item>
+          <!-- <el-form-item label="数据集存储地址:" >           
             <el-upload class="upload"  action :http-request="dataUpload" :on-success="success">        
           <el-button type="primary">点击上传</el-button>
         </el-upload>         
@@ -101,7 +116,7 @@
             <el-upload class="upload"  action :http-request="modelUpload">
           <el-button type="primary">点击上传</el-button>
         </el-upload>         
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" type="primary" @click="handeleditfolder">保 存</el-button>
@@ -134,12 +149,13 @@ export default {
         form: {
           name: '', // 项目名称
           dataPath: '', //数据集成位置
-          modelPath: '' //模型存储位置
+          modelPath: '' ,//模型存储位置
+          description:'' //描述
         },
         rules: {
           name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
-          // dataPath: [{ required: true, message: '请输入数据集存储地址', trigger: 'blur' }],
-          // modelPath: [{ required: true, message: '请输入描述模型存储地址', trigger: 'blur' }]
+          dataPath: [{ required: true, message: '请输入数据集存储地址', trigger: 'blur' }],
+          modelPath: [{ required: true, message: '请输入模型存储地址', trigger: 'blur' }]
         }
       },
        //编辑项目弹层
@@ -153,8 +169,8 @@ export default {
         },
         rules: {
           name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
-          // dataPath: [{ required: true, message: '请输入数据集存储地址', trigger: 'blur' }],
-          // modelPath: [{ required: true, message: '请输入描述模型存储地址', trigger: 'blur' }]
+          dataPath: [{ required: true, message: '请输入数据集存储地址', trigger: 'blur' }],
+          modelPath: [{ required: true, message: '请输入模型存储地址', trigger: 'blur' }]
         }
       },
       tableLoading: false,
@@ -179,7 +195,7 @@ export default {
   methods: {
     //点击文件名跳转详情页
     pushDetail(index,row){
-this.$router.push(`/dataManagement/${row.name}`)
+this.$router.push(`/dataManagement/${row.name}?dataPath=${row.data}`)
     },
     //获取list
     async getProjectList(){
@@ -311,7 +327,7 @@ console.log(event, file, fileList,'1111');
       console.log(this.dataParams.name,this.modelParams.name);
       
       const res=await this.$ajax({
-      url:`/hehe/pm_addProject?name=${this.addfolderDialog.form.name}&datapath=${`/home/gnx/${this.dataParams.name}`}&modelpath=${`/home/gnx/${this.modelParams.name}`}`
+      url:`/hehe/pm_addProject?name=${this.addfolderDialog.form.name}&datapath=${this.addfolderDialog.form.dataPath}&modelpath=${this.addfolderDialog.form.modelpath}`
       })
       console.log(res,'add');
       this.$message.success('保存成功')

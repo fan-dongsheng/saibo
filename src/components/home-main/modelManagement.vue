@@ -2,8 +2,13 @@
   <div class="modelManagement">
       <!-- 模型管理首页 -->
       <!-- echarts -->
-      <el-card style="margin:24px;">
-      <div id="main" style="width: 600px;height:600px;"></div>
+      <el-card style="margin:24px;" >
+          <div class="modelM">
+ <div class="version">版本</div>
+          <div class="json">json</div>
+            <div id="main" style="width: 600px;height:600px;"></div>
+          </div>
+         
       </el-card>
        
   </div>
@@ -198,6 +203,19 @@ mounted(){
 }
 </script>
 
-<style>
-
+<style lang='less' scoped>
+.modelManagement{
+    .modelM{
+        display: flex;
+        .version{
+            width: 200px;
+            height: 200px;
+        }
+        .json{
+            flex: 1;
+            width: 200px;
+            height: 200px;
+        }
+    }
+}
 </style>

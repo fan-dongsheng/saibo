@@ -3,7 +3,9 @@
     <el-card>
       <div slot="header" class="clearfix">
     <div class="title">数据管理</div>
-    
+    <el-button type="success" class="extrt" size="medium">批量抽取</el-button>
+    <el-button type="success" size="medium" >批量入库</el-button>
+    <el-button type="primary" size="medium" style="margin-left:570px" @click="$router.back()">上一步</el-button>
   </div>  
       <el-table
         ref="multipleTable"
@@ -17,24 +19,28 @@
           <template slot-scope="scope">{{ scope.row.name }}</template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" ></el-table-column>
-        
-        <el-table-column prop="extract" label="抽取" ></el-table-column>
-        <el-table-column prop="mark" label="标记" ></el-table-column>
-        <el-table-column prop="bank" label="入库" ></el-table-column>
+        <el-table-column label="抽取" >
+          <template slot-scope="scope">{{ scope.row.extract | extract}}</template>
+        </el-table-column>
+        <el-table-column label="标记" >
+          <template slot-scope="scope">{{ scope.row.mark | mark}}</template>
+        </el-table-column>
+        <el-table-column label="入库" >
+          <template slot-scope="scope">{{ scope.row.bank | bank}}</template>
+        </el-table-column>
+        <!-- <el-table-column prop="extract" label="抽取" ></el-table-column> -->
+        <!-- <el-table-column prop="mark" label="标记" ></el-table-column>
+        <el-table-column prop="bank" label="入库" ></el-table-column> -->
         <el-table-column label="操作" >
           <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="small">删除</el-button>
-        <el-button type="text" size="small" @click="extract(scope.row)">抽取</el-button>
-        <el-button type="text" size="small" >标注</el-button>
+            <el-button @click="delData(scope.row)" type="text" size="small">删除</el-button>
+        <el-button type="text" size="small" @click="pushextract(scope.row)">抽取</el-button>
+        <el-button type="text" size="small" @click="pushmark(scope.row)">标注</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
-<el-button type="text" size="small" @click="regs()">标注</el-button>
-    <!-- 标注补充 -->
-    <div class="mark">
-      <div v-for="(item,index) in markList" :key="index" v-html="item.text">{{item.text}}</div>
-    </div>
+
   </div>
 </template>
 
@@ -77,7 +83,78 @@ export default {
       multipleSelection: [] //多选结果
     }
   },
+  filters:{
+    //列表抽取，标记，入库状态
+extract(value){
+if(value){
+  return '已抽取'
+}else{
+  return '未抽取'
+}
+},
+mark(value){
+if(value){
+  return '已标记'
+}else{
+  return '未标记'
+}
+},
+bank(value){
+if(value){
+  return '已入库'
+}else{
+  return '未入库'
+}
+}
+  },
   methods: {
+    //获取列表数据
+    async getFileList(){
+      const {data} =await this.$ajax({
+        url:'/hehe/fm_getFileList',
+      })
+      this.tableData=data.map(item=>{
+        return{
+          name:item[0],
+          createTime:item[1],
+          extract:item[2],
+          mark:item[3],
+          bank:item[4]
+        }
+      })
+      console.log(data,'获取文件列表成功');
+      
+    },
+    //删除数据
+    async delData(row){
+      this.$confirm('您确定要删除此项目吗, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.$ajax({
+  url:'/hehe/fm_delFile',
+  params:{key:row.name}
+})
+          this.getFileList()
+          
+          
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+
+
+
+    },
     //正则改标签颜色 //点击标注
     regs() {
       var mark = this.markList
@@ -106,11 +183,19 @@ export default {
       this.multipleSelection = val
     },
     //抽取
-    extract(row){
-      this.$router.push(`/dataManagement/${row.name}/${row.extract}`)
+    pushextract(row){
+      console.log(row);
+      
+      this.$router.push(`/dataManagement/${row.name}/${row.extract?'抽取':'抽取'}?dataPath=${this.$route.query.dataPath}`)
+    },
+    //标注
+    pushmark(row){
+      this.$router.push(`/dataManagement/${row.name}/${row.mark?'标记':'标记'}?dataPath=${this.$route.query.dataPath}`)
     }
   },
-  created() {}
+  created() {
+    this.getFileList()
+  }
 }
 </script>
 
@@ -118,6 +203,14 @@ export default {
 .dataManagement {
   border: 1px solid rgb(242, 243, 244);
   height: 100%;
+  .clearfix{
+    display: flex;
+    align-items: center;
+    .extrt{
+      margin-left: 30px;
+      margin-right: 30px;
+    }
+  }
   .el-card {
     font-size: 16px;
     margin: 24px;
