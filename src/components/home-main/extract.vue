@@ -59,7 +59,7 @@
           <div class="list-cont" v-for="(item,index) in listMark" :key="index">
             <div class="a" v-for="(val,key,i) in item" :key="i" :style="`background-color:${val}`">
               {{key}}
-              <i class="el-icon-close" @click="delLis(item,index)"></i>
+              <!-- <i class="el-icon-close" @click="delLis(item,index,val,key,i)"></i> -->
             </div>
           </div>
         </el-card>
@@ -118,7 +118,7 @@ export default {
         this.regs()
       } catch (error) {
         this.marLoading = false
-        this.$message.error('获取标注失败')
+        // this.$message.error('获取标注失败')
       }
     },
     //抽取结果
@@ -140,7 +140,7 @@ export default {
         console.log(error)
 
         this.EartLoading = false
-        this.$message.error('获取实体失败')
+        // this.$message.error('获取实体失败')
       }
     },
     //滑动取词
@@ -170,7 +170,7 @@ export default {
       var mark = this.markList
       var bgNew = {} //新数组,
       mark.forEach((item, index) => {
-        console.log(item, '111111111111111')
+        // console.log(item, '111111111111111')
 
         if (item.nr) {
           var searchText = word ? word : item.nr[0]
@@ -206,30 +206,40 @@ export default {
       this.listMark.push(bgNew)
     },
     //点击×删除右侧数组队列
-    delLis(arrNow, index) {
-      console.log(arrNow)
-      //只截取中文字符
-      var reg = /[\u4e00-\u9fa5]/g
-      var names = arrNow.match(reg)
-      var name = names.join('')
-      console.log(name, '汉子')
-
-      //右侧数组删除
-      this.listMark.splice(index, 1)
-      //左侧的文章颜色取消
+    delLis(item, index, val, key, i) {
+      console.log(item, index, val, key, i, 'aaaaaaa')
       var oldTxt = this.markList
       console.log(oldTxt, 'old')
-      oldTxt.forEach((item, i) => {
-        var text = item.text // 每行文字
-        if (text.indexOf(name) >= 0) {
-          var text = text.replace(arrNow, `<span >` + name + '</span>')
-          console.log(text, '最新的text')
+      /*   oldTxt.forEach((it,id)=>{
+        console.log(it,'wwwwwwwww');
+        
+          if (it.nr) {
+          var searchText = it.nr[0]
+          
+          
+          var text = it.text
+          if (searchText.indexOf(key) >= 0) {
+        //  alert(1)
+            // var text = text.replace(searchText,  `<span >` + key + '</span>')
+            console.log(text,'eeeeeeeeeeeeeeeeeee');
+            
+           
+          }
+          oldTxt[id].text = text
         }
-        oldTxt[i].text = text
-      })
-
-      // oldTxt.replace(arrNow,)
-      // var NewTxt=
+         if (it.ns) {
+          var searchText = it.ns[0]
+          var text = it.text
+          if (searchText.indexOf(key) >= 0) {
+        //  alert(1)
+            var text = text.replace(searchText,  `<span >` + key + '</span>')
+           
+          }
+          oldTxt[id].text = text
+         
+          
+        }
+      }) */
     },
     open() {},
     toTeamInfo() {
