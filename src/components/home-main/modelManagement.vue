@@ -50,6 +50,32 @@ export default {
     }
   },
   methods: {
+      ceshi(){
+//             "relation": {
+    //     "因果关系": [],
+    //     "从属关系": [["故障", "故障原因"]]
+    // }
+var linksJson=[
+    {value:'因果关系',arr:[]},
+    {value:"从属关系",arr:[["故障", "故障原因"]]}
+]
+         
+              linksJson= linksJson.map((ele,i)=>{
+                   
+                   return {
+                        source:ele.arr.map(it=>{
+                            return it[0]?it[0]:''
+                        }).toString() ,
+                        target: ele.arr.map(it=>{
+                            return it[1]?it[1]:''
+                        }).toString() ,
+                        value: ele.value
+                   }
+               })
+               console.log(linksJson,'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww');
+               
+
+      },
     //获取json文件、
     async getJson(d) {
       try {
@@ -69,7 +95,7 @@ export default {
         //第一层最大的外圈
 
         for (var key in bigger) {
-          console.log(key, ':', bigger[key], '==================')
+        //   console.log(key, ':', bigger[key], '==================')
           //如果是实体的话
           if (key == 'entity') {
             for (var key1 in bigger[key]) {
@@ -96,6 +122,38 @@ export default {
 
             // console.log(this.echDataJson,'+++++++++++++++++++++++++++++++++++++=');
           }
+          if(key=='relation'){
+               for (var key1 in bigger[key]) {
+                //    console.log(key1, ':', bigger[key][key1], 'rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr')
+                   this.linksJson.push({value:key1,arr:bigger[key][key1]})
+                   
+               }
+    //             "relation": {
+    //     "因果关系": [],
+    //     "从属关系": [["故障", "故障原因"]]
+    // }
+ 
+
+               
+               this.linksJson.map((ele,i)=>{
+                   
+                   return {
+                        source:ele.arr.map(it=>{
+                            return it[0]?it[0]:''
+                        }).toString(),
+                        target: ele.arr.map(it=>{
+                            return it[1]?it[1]:''
+                        }).toString(),
+                        value: ele.value
+                   }
+               })
+               
+                 
+          }
+            console.log(this.linksJson,'lllllllllllllllllllllllaaaaaaaaaaaaaaaaaaaaaaaaa');
+            
+
+
           this.echat()
         }
       } catch (error) {
@@ -317,6 +375,7 @@ export default {
   mounted() {
     this.echat()
     this.jsonData()
+    this.ceshi()
   }
 }
 </script>
