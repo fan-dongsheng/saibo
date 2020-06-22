@@ -55,30 +55,30 @@ export default {
       dataParams: {}, //上传文件file参数
       modelParams: {},
       tableData: [
-        {
-          name: 'a.txt',
-          createTime: '2020-6-15',
-          description: '描述',
-          extract: '未抽取',
-          mark: '未标注',
-          bank: '未入库'
-        },
-        {
-          name: 'a.txt',
-          createTime: '2020-6-15',
-          description: '描述',
-          extract: '未抽取',
-          mark: '未标注',
-          bank: '未入库'
-        },
-        {
-          name: 'a.txt',
-          createTime: '2020-6-15',
-          description: '描述',
-          extract: '未抽取',
-          mark: '未标注',
-          bank: '未入库'
-        }
+        // {
+        //   name: 'a.txt',
+        //   createTime: '2020-6-15',
+        //   description: '描述',
+        //   extract: '未抽取',
+        //   mark: '未标注',
+        //   bank: '未入库'
+        // },
+        // {
+        //   name: 'a.txt',
+        //   createTime: '2020-6-15',
+        //   description: '描述',
+        //   extract: '未抽取',
+        //   mark: '未标注',
+        //   bank: '未入库'
+        // },
+        // {
+        //   name: 'a.txt',
+        //   createTime: '2020-6-15',
+        //   description: '描述',
+        //   extract: '未抽取',
+        //   mark: '未标注',
+        //   bank: '未入库'
+        // }
       ], //多选列表
       multipleSelection: [] //多选结果
     }

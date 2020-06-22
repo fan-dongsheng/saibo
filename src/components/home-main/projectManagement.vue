@@ -6,7 +6,7 @@
         <el-table-column prop="name" label="项目名称"></el-table-column>
         <el-table-column label="数据集">
           <template slot-scope="scope" class>
-            <el-button size="mini" type="text" @click="pushDetail(scope.$index, scope.row)">{{scope.row.data}}</el-button>
+            <el-button size="mini" type="text" @click="pushDetail(scope.$index, scope.row)">{{scope.row.dataPath}}</el-button>
             
           </template>
         </el-table-column>
@@ -14,11 +14,11 @@
         
          <el-table-column label="本体图">
           <template slot-scope="scope" class>
-            <el-button size="mini" type="text" >{{scope.row.figure}}</el-button>
+            <el-button size="mini" type="text" >{{scope.row.modelPath}}</el-button>
             
           </template>
         </el-table-column>
-        <el-table-column prop="atlas" label="图谱"></el-table-column>
+        <!-- <el-table-column prop="atlas" label="图谱"></el-table-column> -->
         <el-table-column prop="description" label="备注"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope" class>
@@ -102,10 +102,10 @@
             <el-input v-model="editfolderDialog.form.name" autocomplete="off" disabled></el-input>
           </el-form-item>
            <el-form-item label="数据集存储地址:" prop="dataPath" >
-            <el-input v-model="addfolderDialog.form.dataPath" autocomplete="off"></el-input>
+            <el-input v-model="editfolderDialog.form.dataPath" autocomplete="off"></el-input>
           </el-form-item>
            <el-form-item label="模型存储地址:" prop="modelPath">
-            <el-input v-model="addfolderDialog.form.modelPath" autocomplete="off"></el-input>
+            <el-input v-model="editfolderDialog.form.modelPath" autocomplete="off"></el-input>
           </el-form-item>
           <!-- <el-form-item label="数据集存储地址:" >           
             <el-upload class="upload"  action :http-request="dataUpload" :on-success="success">        
@@ -210,8 +210,8 @@ this.$router.push(`/dataManagement/${row.name}?dataPath=${row.data}`)
       this.tableProject=data.map((item,i)=>{
         return {
           name:item[0],
-          data:item[1],
-          figure:item[2]
+          dataPath:item[1],
+          modelPath:item[2]
         }
         
       })
@@ -263,11 +263,18 @@ console.log(event, file, fileList,'1111');
       this.editfolderDialog.form=row
     },
     //修改项目
-    async handeleditfolder(){
-      try {
+     handeleditfolder(){
+      this.$refs.editfolderForm.validate(async(valid)=>{
+if(valid){
+ try {
         const res= await this.$ajax({
         url:`/hehe/pm_modProject`,
-        params:this.editfolderDialog.form
+        params:{
+          name:this.editfolderDialog.form.name,
+          datapath:this.editfolderDialog.form.dataPath,
+          modelpath:this.editfolderDialog.form.modelPath
+        }
+        
       })
      
       this.editfolderDialog.visible=false
@@ -276,6 +283,14 @@ console.log(event, file, fileList,'1111');
       } catch (error) {
         this.$message.error('修改失败')
       }
+}else {
+            console.log('error submit!!');
+              this.addfolderDialog.loading = false
+            return false;
+          }
+
+      })
+     
       
       
     },
@@ -326,8 +341,10 @@ console.log(event, file, fileList,'1111');
       // }
       console.log(this.dataParams.name,this.modelParams.name);
       
+      console.log(this.addfolderDialog,'jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjklllkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
+      
       const res=await this.$ajax({
-      url:`/hehe/pm_addProject?name=${this.addfolderDialog.form.name}&datapath=${this.addfolderDialog.form.dataPath}&modelpath=${this.addfolderDialog.form.modelpath}`
+      url:`/hehe/pm_addProject?name=${this.addfolderDialog.form.name}&datapath=${this.addfolderDialog.form.dataPath}&modelpath=${this.addfolderDialog.form.modelPath}`
       })
       console.log(res,'add');
       this.$message.success('保存成功')

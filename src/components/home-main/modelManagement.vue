@@ -31,7 +31,9 @@
         </div>
         <div class="json">
           json
-          <pre><code id="json"></code></pre>
+          <div class="jsonBorder">
+            <pre><code id="json"></code></pre>
+          </div>
         </div>
         <div id="main" style="width: 600px;height:600px;"></div>
       </div>
@@ -50,32 +52,33 @@ export default {
     }
   },
   methods: {
-      ceshi(){
-//             "relation": {
-    //     "因果关系": [],
-    //     "从属关系": [["故障", "故障原因"]]
-    // }
-var linksJson=[
-    {value:'因果关系',arr:[]},
-    {value:"从属关系",arr:[["故障", "故障原因"]]}
-]
-         
-              linksJson= linksJson.map((ele,i)=>{
-                   
-                   return {
-                        source:ele.arr.map(it=>{
-                            return it[0]?it[0]:''
-                        }).toString() ,
-                        target: ele.arr.map(it=>{
-                            return it[1]?it[1]:''
-                        }).toString() ,
-                        value: ele.value
-                   }
-               })
-               console.log(linksJson,'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww');
-               
+    ceshi() {
+      //             "relation": {
+      //     "因果关系": [],
+      //     "从属关系": [["故障", "故障原因"]]
+      // }
+      var linksJson = [
+        { value: '因果关系', arr: [] },
+        { value: '从属关系', arr: [['故障', '故障原因']] }
+      ]
 
-      },
+      linksJson = linksJson.map((ele, i) => {
+        return {
+          source: ele.arr
+            .map(it => {
+              return it[0] ? it[0] : ''
+            })
+            .toString(),
+          target: ele.arr
+            .map(it => {
+              return it[1] ? it[1] : ''
+            })
+            .toString(),
+          value: ele.value
+        }
+      })
+      console.log(linksJson, 'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww')
+    },
     //获取json文件、
     async getJson(d) {
       try {
@@ -95,7 +98,7 @@ var linksJson=[
         //第一层最大的外圈
 
         for (var key in bigger) {
-        //   console.log(key, ':', bigger[key], '==================')
+          //   console.log(key, ':', bigger[key], '==================')
           //如果是实体的话
           if (key == 'entity') {
             for (var key1 in bigger[key]) {
@@ -122,37 +125,33 @@ var linksJson=[
 
             // console.log(this.echDataJson,'+++++++++++++++++++++++++++++++++++++=');
           }
-          if(key=='relation'){
-               for (var key1 in bigger[key]) {
-                //    console.log(key1, ':', bigger[key][key1], 'rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr')
-                   this.linksJson.push({value:key1,arr:bigger[key][key1]})
-                   
-               }
-    //             "relation": {
-    //     "因果关系": [],
-    //     "从属关系": [["故障", "故障原因"]]
-    // }
- 
+          if (key == 'relation') {
+            for (var key1 in bigger[key]) {
+              //    console.log(key1, ':', bigger[key][key1], 'rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr')
+              this.linksJson.push({ value: key1, arr: bigger[key][key1] })
+            }
+            //             "relation": {
+            //     "因果关系": [],
+            //     "从属关系": [["故障", "故障原因"]]
+            // }
 
-               
-               this.linksJson.map((ele,i)=>{
-                   
-                   return {
-                        source:ele.arr.map(it=>{
-                            return it[0]?it[0]:''
-                        }).toString(),
-                        target: ele.arr.map(it=>{
-                            return it[1]?it[1]:''
-                        }).toString(),
-                        value: ele.value
-                   }
-               })
-               
-                 
+            this.linksJson = this.linksJson.map((ele, i) => {
+              return {
+                source: ele.arr
+                  .map(it => {
+                    return it[0] ? it[0] : ''
+                  })
+                  .toString(),
+                target: ele.arr
+                  .map(it => {
+                    return it[1] ? it[1] : ''
+                  })
+                  .toString(),
+                value: ele.value
+              }
+            })
           }
-            console.log(this.linksJson,'lllllllllllllllllllllllaaaaaaaaaaaaaaaaaaaaaaaaa');
-            
-
+          console.log(this.linksJson, 'lllllllllllllllllllllllaaaaaaaaaaaaaaaaaaaaaaaaa')
 
           this.echat()
         }
@@ -164,36 +163,42 @@ var linksJson=[
     activeVer(i, d) {
       this.activeVerd = i
       this.getJson(d)
+      this.echDataJson = []
+      this.linksJson = []
     },
     //默认页面展示json数据
     jsonData() {
       let btn = document.querySelector('#json')
-      let dataHtml = {
-        entity: {
-          项目: {},
-          单位: {
-            type: ['需求单位', '申报单位', '曾合作单位', '所在学会']
-          },
-          专业领域: {},
-          研究方向: {}
-        },
-        relation: {
-          需求关系1: ('项目', '单位'),
-          需求关系2: ('项目', '专业领域'),
-          申报关系: ('项目', '单位'),
-          合作关系: ('申报单位', '曾合作单位'),
-          研究关系: ('申报单位', '研究方向'),
-          包含关系1: ('专业领域', '研究方向'),
-          包含关系2: ('学会', '申报单位')
-        }
-      }
-      btn.textContent = JSON.stringify(dataHtml, null, '  ')
+      // let dataHtml = {
+      //   entity: {
+      //     项目: {},
+      //     单位: {
+      //       type: ['需求单位', '申报单位', '曾合作单位', '所在学会']
+      //     },
+      //     专业领域: {},
+      //     研究方向: {}
+      //   },
+      //   relation: {
+      //     需求关系1: ('项目', '单位'),
+      //     需求关系2: ('项目', '专业领域'),
+      //     申报关系: ('项目', '单位'),
+      //     合作关系: ('申报单位', '曾合作单位'),
+      //     研究关系: ('申报单位', '研究方向'),
+      //     包含关系1: ('专业领域', '研究方向'),
+      //     包含关系2: ('学会', '申报单位')
+      //   }
+      // }
+
+      let dataHtml = { entity: {}, relation: {} }
+      btn.textContent = JSON.stringify(dataHtml, null, '')
     },
     echat() {
       // 基于准备好的dom，初始化echarts实例
       var myChart = this.$echarts.init(document.getElementById('main'))
       //获取后台数据的处理赋值
       var data = this.echDataJson
+      console.log(data, 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee=========')
+
       var links = this.linksJson
 
       // 指定图表的配置项和数据
@@ -247,6 +252,7 @@ var linksJson=[
               }
             },
             data: data,
+            links: links
             // data: [
             // {
             //     "name": "项目",
@@ -307,63 +313,63 @@ var linksJson=[
 
             // },
             // ],
-            links: [
-              {
-                source: '项目',
-                target: '单位',
-                value: '需求关系1'
-              },
-              {
-                source: '项目',
-                target: '专业领域',
-                value: '需求关系2'
-              },
-              {
-                source: '项目',
-                target: '单位',
-                value: '申报关系'
-              },
-              {
-                source: '单位',
-                target: '申报单位单位',
-                value: ''
-              },
-              {
-                source: '单位',
-                target: '需求单位',
-                value: ''
-              },
-              {
-                source: '单位',
-                target: '曾合作单位',
-                value: ''
-              },
-              {
-                source: '单位',
-                target: '所在学会',
-                value: ''
-              },
-              {
-                source: '申报单位',
-                target: '曾合作单位',
-                value: '合作关系'
-              },
-              {
-                source: '申报单位',
-                target: '研究方向',
-                value: '研究关系'
-              },
-              {
-                source: '专业领域',
-                target: '研究方向',
-                value: '包含关系1'
-              },
-              {
-                source: '所在学会',
-                target: '申报单位',
-                value: '包含关系2'
-              }
-            ]
+            // links: [
+            //   {
+            //     source: '项目',
+            //     target: '单位',
+            //     value: '需求关系1'
+            //   },
+            //   {
+            //     source: '项目',
+            //     target: '专业领域',
+            //     value: '需求关系2'
+            //   },
+            //   {
+            //     source: '项目',
+            //     target: '单位',
+            //     value: '申报关系'
+            //   },
+            //   {
+            //     source: '单位',
+            //     target: '申报单位单位',
+            //     value: ''
+            //   },
+            //   {
+            //     source: '单位',
+            //     target: '需求单位',
+            //     value: ''
+            //   },
+            //   {
+            //     source: '单位',
+            //     target: '曾合作单位',
+            //     value: ''
+            //   },
+            //   {
+            //     source: '单位',
+            //     target: '所在学会',
+            //     value: ''
+            //   },
+            //   {
+            //     source: '申报单位',
+            //     target: '曾合作单位',
+            //     value: '合作关系'
+            //   },
+            //   {
+            //     source: '申报单位',
+            //     target: '研究方向',
+            //     value: '研究关系'
+            //   },
+            //   {
+            //     source: '专业领域',
+            //     target: '研究方向',
+            //     value: '包含关系1'
+            //   },
+            //   {
+            //     source: '所在学会',
+            //     target: '申报单位',
+            //     value: '包含关系2'
+            //   }
+            // ]
           }
         ]
       }
@@ -373,9 +379,9 @@ var linksJson=[
     }
   },
   mounted() {
-    this.echat()
-    this.jsonData()
-    this.ceshi()
+    this.echat() //
+    this.jsonData() //页面展示的json数据
+    // this.ceshi()
   }
 }
 </script>
@@ -386,22 +392,23 @@ var linksJson=[
     display: flex;
     .version {
       .active {
-        background-color: rgb(0, 110, 255);
+        background-color: rgb(0, 162, 255);
+        color: white;
       }
       width: 200px;
-      height: 200px;
+
       font-size: 18px;
       font-weight: 600;
       .ver-cont {
-        margin-top: 150px;
+        margin-top: 20px;
 
         .ver-cont1 {
           width: 100px;
           text-align: center;
           height: 30px;
           line-height: 30px;
-
-          margin-bottom: 30px;
+          border-radius: 4px;
+          margin-bottom: 12px;
           cursor: pointer;
         }
         .ver-cont2 {
@@ -418,7 +425,16 @@ var linksJson=[
       font-weight: 600;
       flex: 1;
       width: 200px;
-      height: 200px;
+      margin-right: 20px;
+      .jsonBorder {
+        height: 520px;
+        margin-top: 20px;
+        font-size: 14px;
+        border: 2px solid #ccc;
+        padding: 20px;
+        border-radius: 4px;
+        overflow-y: auto;
+      }
     }
   }
 }
