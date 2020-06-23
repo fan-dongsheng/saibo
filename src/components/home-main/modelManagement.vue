@@ -502,25 +502,71 @@ if(valid){
         const { data } = await this.$ajax({
           url: '/hehe/read_json',
           params: {
-            file_path: `/home/gnx/tmp/pycharm_project_180`,
+            project:'pro1',
+            // file_path: `/home/gnx/tmp/pycharm_project_180`,
             version: d
           }
         })
         console.log(data, '获取json文件test1')
         let btn = document.querySelector('#json')
         let dataHtml = data
-        let bigger = data //后套返回json数据需要处理成eachrts需要的数据
+        // let bigger = data //后套返回json数据需要处理成eachrts需要的数据
+
+        let bigger={
+    "entity": {
+        "基金项目名称": {},
+        "单位": {
+            "type": ["需求单位", "申报单位", "曾合作单位", "所在学会"]
+        },
+        "专业领域": {},
+        "研究方向": {}
+    },
+    "relation": {
+        "需求关系1": [["项目", "单位"]],
+        "需求关系2": [["项目", "专业领域"]],
+        "申报关系": [["项目", "单位"]],
+        "合作关系": [["申报单位", "曾合作单位"]],
+        "研究关系": [["申报单位", "研究方向"]],
+        "包含关系1": [["专业领域", "研究方向"]],
+        "包含关系2": [["学会", "申报单位"]],
+        "因果关系": [],
+        "从属关系": []
+    }
+}
         btn.textContent = JSON.stringify(dataHtml, null, '  ')
         //遍历后台返回的json对象
         //第一层最大的外圈
 
         for (var key in bigger) {
+          
           //   console.log(key, ':', bigger[key], '==================')
           //如果是实体的话
           if (key == 'entity') {
+            var typeList=[]  //key1设置一个空数组，这个主要是为了type这个添加数组设置的中间变量
             for (var key1 in bigger[key]) {
               console.log(key1, ':', bigger[key][key1], 'shitishishishiss')
-              this.echDataJson.push({ name: key1 })
+              //判断对象有没有子集，有的话还需要遍历取出，添加到name
+           if(JSON.stringify(bigger[key][key1]) == "{}"){
+this.echDataJson.push({ name: key1 })
+           }else{
+             //单位里面继续套的type需要解析出来
+             
+            //  var typeList=[]
+             typeList.push(key1)
+for (const key2 in bigger[key][key1]) {
+ console.log( key2,':', bigger[key][key1][key2], 'shitishishishiss============')
+//遍历type的数组val值,再加到数组中
+      for(const key3 in bigger[key][key1][key2]){
+        console.log(key3,':', bigger[key][key1][key2][key3], ',,,,,,,,,,,,,,,,,,,,,,,,,,,');
+        
+        typeList.push(bigger[key][key1][key2][key3])
+      }
+
+}
+
+
+           }
+              
             }
 
             var color = ['#06FDBC', '#0188FE', '#07B0FE', '#FDB408', '#00DB1C', '#0188FE']
@@ -539,6 +585,23 @@ if(valid){
                 }
               }
             })
+          //else 中type需要整合添加的颜色
+console.log(typeList,'typeList');
+typeList=typeList.map((item,i)=>{
+  return{
+    name:item,
+    itemStyle: {
+                  normal: {
+                    borderColor: '#C07AB8',
+                    borderWidth: 2,
+                    shadowBlur: 10,
+                    shadowColor: '#C07AB8',
+                    color: '#C07AB8'
+                  }
+                }
+  }
+})
+this.echDataJson.push(...typeList)
 
             // console.log(this.echDataJson,'+++++++++++++++++++++++++++++++++++++=');
           }
@@ -813,7 +876,7 @@ if(valid){
         background-color: rgb(0, 162, 255);
         color: white;
       }
-      width: 200px;
+      width: 165px;
 
       font-size: 18px;
       font-weight: 600;

@@ -12,7 +12,7 @@
           <div class="title">实体生成</div>
         </div>
         <div class="card1">
-          <div class="bus">
+          <div class="bus" v-if="teamListAll.length==0">
             <el-popover
               class="box"
              width="200"
@@ -26,6 +26,25 @@
               <div slot="reference"  style="padding-top: 21px;
         padding-left: 30px;">
                 <div class="text">{{ key }}</div>
+                <div class="line"></div>
+                <div class="icon"></div>
+              </div>
+            </el-popover>
+          </div>
+          <div class="bus" v-else v-for="(ele,i) in teamListAll" :key="i">
+            <el-popover
+              class="box"
+             width="200"
+              v-for="(item,index) in ele"
+              :key="index"
+              placement="top-start"
+              title="路径"
+              trigger="hover"
+              :content="item.fie"
+            >
+              <div slot="reference"  style="padding-top: 21px;
+        padding-left: 30px;">
+                <div class="text">{{ item.name }}</div>
                 <div class="line"></div>
                 <div class="icon"></div>
               </div>
@@ -46,6 +65,7 @@
               <div class="icon"></div>
             </div>
           </div>
+          
         </div>
       </el-card>
     </div>
@@ -98,7 +118,8 @@ export default {
         { text: '中国第一款陆基超音速巡航导弹长剑-100', ns: ['中国'], nr: ['剑-1'], nt: [] },
         { text: '中国第一款陆基超音速巡航导弹长剑-100', ns: ['中国'], nr: ['剑-1'], nt: [] }
       ],
-      teamList: [],
+      teamList: [],//抽取结果
+      teamListAll:[], //批量抽取展示
       figureList: [
         {
           name: 'a.json'
@@ -117,7 +138,8 @@ export default {
   methods: {
     //标注结果
     async markResult() {
-      this.marLoading = true
+      if(this.$route.query.extract=='标记'){
+this.marLoading = true
       try {
         const { data } = await this.$ajax({
           url: '/hehe/fm_labelSave',
@@ -133,22 +155,52 @@ export default {
         this.marLoading = false
         // this.$message.error('获取标注失败')
       }
+      }
+      
     },
     //抽取结果
     async exrtResult() {
       try {
         this.EartLoading = true
-        const { data } = await this.$ajax({
+        //判断是不是批量抽取
+        if(this.$route.query.dirpath){
+          const {data}=await this.$ajax({
+    url:'/hehe/fm_batchLabel',
+     params:{dirpath:this.$route.query.dirpath,
+     filenames:this.$route.query.filenames
+     }
+  })
+  this.teamListAll=data.map((item,index)=>{
+          return item.map((ele,i)=>{
+              return {
+                name:`entity${i}`,
+                fie:ele
+              }
+          })
+        })
+  
+  console.log(this.teamListAll);
+  this.$message.success('抽取成功')
+  console.log(data,'批量抽取结果');
+  
+this.EartLoading = false
+        }else{
+          const { data } = await this.$ajax({
           url: '/hehe/fm_extract',
           params: {
             input_file: `${this.$route.query.dataPath}/test02.txt`
           }
         })
-
         console.log(data, '实体结果')
         this.teamList = data
         this.regs()
+        this.$message.success('抽取成功')
         this.EartLoading = false
+        }
+        
+        
+
+        
       } catch (error) {
         console.log(error)
 
@@ -262,8 +314,8 @@ export default {
   created() {
     this.regs()
     console.log(this.$route)
-    this.exrtResult()
-    this.markResult()
+    this.exrtResult() //抽取
+    this.markResult() //标记
   }
 }
 </script>

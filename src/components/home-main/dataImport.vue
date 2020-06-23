@@ -2,11 +2,11 @@
   <div class="dataImport">
     <el-card class="cardT">
       <div class="flex">
-<div class="left">
-        <div class="title">xxx图谱</div>
-        <div class="ent">实体(个)</div>
-        <div class="relation">关系(个)</div>
-        <div class="center">中心节点(个)</div>
+<div class="left" >
+        <div class="title">详细数据</div>
+        <div class="ent">实体(个) : <span>{{imp['entityCount']}}</span></div>
+        <div class="relation">关系(个) : <span>{{imp['relationCount']}}</span></div>
+        <div class="center">中心节点(个) : <span>{{imp['entityCenter']}}</span></div>
       </div>
       <div class="right">
          <div id="main" style="width: 600px;height:600px;"></div>
@@ -21,13 +21,23 @@
 export default {
   data(){
     return{
-
+imp:{}
     }
   },
   mounted(){
+    this.dataImp() //数据导入
     this.echat()
   },
   methods:{
+    //数据导入
+    async dataImp(){
+      const {data}=await this.$ajax({
+        url:'/hehe/fm_dataCount?csvPath=/home/gnx/tmp/pycharm_project_180/data/csvdata',
+      })
+      console.log(data);
+      
+this.imp=data
+    },
         echat() {
       // 基于准备好的dom，初始化echarts实例
       var myChart = this.$echarts.init(document.getElementById('main'))
@@ -227,6 +237,24 @@ display: flex;
     }
     .left{
       flex: 1;
+      font-size: 18px;
+      span{
+        color: #396fff;
+      }
+      .title{
+        font-size: 20px;
+        font-weight: 700;
+        margin: 24px;
+      }
+      .ent{
+        margin: 24px;
+      }
+      .relation{
+margin: 24px;
+      }
+      .center{
+margin: 24px;
+      }
     }
   }
 }

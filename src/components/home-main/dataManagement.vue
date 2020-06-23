@@ -3,8 +3,8 @@
     <el-card>
       <div slot="header" class="clearfix">
     <div class="title">数据管理</div>
-    <el-button type="success" class="extrt" size="medium">批量抽取</el-button>
-    <el-button type="success" size="medium" >批量入库</el-button>
+    <el-button type="success" class="extrt" size="medium" @click="allEart">批量抽取</el-button>
+    <el-button type="success" size="medium" @click="allBank">批量入库</el-button>
     <el-button type="primary" size="medium" style="margin-left:570px" @click="$router.back()">上一步</el-button>
   </div>  
       <el-table
@@ -36,7 +36,7 @@
             <!-- <el-button @click="delData(scope.row)" type="text" size="small">删除</el-button> -->
         <el-button type="text" size="small" v-if="scope.row.name.substring( scope.row.name.lastIndexOf('.')+1)=='txt'" @click="pushextract(scope.row)">抽取</el-button>
         <el-button type="text" size="small" v-if="scope.row.name.substring( scope.row.name.lastIndexOf('.')+1)=='txt'" @click="pushmark(scope.row)">标注</el-button>
-        <el-button type="text" size="small" v-else @click="pushextract(scope.row)">入库</el-button>
+        <el-button type="text" size="small" v-else @click="pushbank(scope.row)">入库</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -109,6 +109,41 @@ if(value==='true'){
 }
   },
   methods: {
+    //入库
+   async pushbank(){
+const {data} =await this.$ajax({
+        url:'/hehe/into',
+        params:{csvdatapath:this.$route.query.dataPath,
+        modelpath:'/home/gnx/tmp/pycharm_project_180/data/model/pro1/v1.json'}
+      })
+      console.log('入库成功',data);
+      this.$message.success('入库成功')
+    },
+    //批量入库
+    async allBank(){
+      if(this.multipleSelection.length<=0){
+         this.$message.warning('请先选择数据')
+      }else{
+ const {data} =await this.$ajax({
+        url:'/hehe/into',
+        params:{csvdatapath:this.$route.query.dataPath,
+        modelpath:'/home/gnx/tmp/pycharm_project_180/data/model/pro1/v1.json'}
+      })
+      console.log('入库成功',data);
+      this.$message.success('入库成功')
+      }
+
+      
+    },
+    //批量抽取
+   async allEart(){
+if(this.multipleSelection.length<=0){
+  this.$message.warning('请先选择数据')
+}else{
+   this.$router.push(`/dataManagement/allExt/抽取?dirpath=${this.$route.query.dataPath}&filenames=${this.multipleSelection}`)
+  
+}
+    },
     //获取列表数据
     async getFileList(){
       const {data} =await this.$ajax({
@@ -160,7 +195,15 @@ if(value==='true'){
 
     //表格多选
     handleSelectionChange(val) {
-      this.multipleSelection = val
+     console.log(val);
+     var a=[]
+     a=val.map(item=>{
+       return item.name
+     })
+     this.multipleSelection=a
+     console.log(a);
+     
+      
     },
     //抽取
     pushextract(row){
