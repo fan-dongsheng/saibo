@@ -14,7 +14,7 @@
     <el-button type="primary" size="medium" style="margin:24px;margin-bottom:0" @click="delEntDilog.visible=true">删除实体</el-button>
     <el-button type="primary" size="medium" style="margin:24px;margin-bottom:0" @click="addRelationDilog.visible=true">新建关系</el-button>
     <el-button type="primary" size="medium" style="margin:24px;margin-bottom:0" @click="editRelationDilog.visible=true">修改关系</el-button>
-    <el-button type="primary" size="medium" style="margin:24px;margin-bottom:0">删除关系</el-button>
+    <el-button type="primary" size="medium" style="margin:24px;margin-bottom:0" @click="delRelationDilog.visible=true">删除关系</el-button>
     </div>
     
     <el-card style="margin:24px;">
@@ -38,6 +38,7 @@
             <pre style="background-color: rgb(1, 132, 252,0.5);border-radius: 5px;padding:10px;"><code id="json"></code></pre>
           </div>
         </div>
+        <!-- echarts ======================================================-->
         <div id="main" style="width: 600px;height:600px;"></div>
       </div>
     </el-card>
@@ -186,6 +187,38 @@
         </div>
       </div>
     </el-dialog>
+    <!-- //删除关系弹窗 -->
+    <el-dialog width="600px" title="删除关系" :visible.sync="delRelationDilog.visible">
+      <div v-loading="delRelationDilog.loading" class="dialog-wrapper">
+        <el-form
+          label-width="150px"
+          ref="delRelationForm"
+          :model="delRelationDilog.form"
+          :rules="delRelationDilog.rules"
+          size="mini"
+        >
+          <el-form-item label="实体source:" prop="ent1" >
+            <el-input v-model="delRelationDilog.form.ent1" autocomplete="off" ></el-input>
+          </el-form-item>
+           <el-form-item label="实体target:" prop="ent2">
+            <el-input v-model="delRelationDilog.form.ent2" autocomplete="off"></el-input>
+          </el-form-item>
+           <el-form-item label="关系:"  prop="rel">
+            <el-input v-model="delRelationDilog.form.rel" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="文件路径:" prop="file_path" >
+            <el-input v-model="delRelationDilog.form.file_path" autocomplete="off" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="版本号:" prop="version">
+            <el-input v-model="this.version" autocomplete="off" disabled></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button size="mini" type="primary" @click="handeldelrelation">保 存</el-button>
+          <el-button size="mini" @click="delRelationDilog.visible = false">取 消</el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -270,6 +303,27 @@ export default {
       },
        //修改关系
       editRelationDilog:{
+        visible:false,
+        loading:false,
+        form:{
+          ent1:'故障', //实体
+          rel:'因果关系',//关系
+          ent2:'故障原因',  //
+          search_index:'0',  //搜素引擎
+          new_value:'从属关系',  //修改关系
+          project:'pro1',//项目名称
+          file_path:'/home/gnx/tmp/pycharm_project_180',  //文件路径
+          version:this.version//版本号
+        },
+        rules: {
+          ent1: [{ required: true, message: '请输入实体名称', trigger: 'blur' }],
+          rel: [{ required: true, message: '请输入实体属性', trigger: 'blur' }],
+          ent2: [{ required: true, message: '请输入实体属性值', trigger: 'blur' }]
+        }
+        
+      },
+      //删除关系
+      delRelationDilog:{
         visible:false,
         loading:false,
         form:{
@@ -399,6 +453,29 @@ if(valid){
    //修改关系
    handeleditrelation(){
 this.$refs.editRelationForm.validate(async(valid)=>{
+if(valid){
+  try {
+    const {data}=await this.$ajax({
+      url:'/hehe/add_relation',
+      params:this.editRelationDilog.form
+    })
+    console.log(data,'修改成功');
+    this.getJson()
+    this.editRelationDilog.loading = false
+  } catch (error) {
+    console.log(error,'修改失败');
+    this.editRelationDilog.loading = false
+  }
+}else{
+   console.log('error submit!!');
+              this.editRelationDilog.loading = false
+            return false;
+}
+})
+   },
+   //删除关系
+   handeldelrelation(){
+this.$refs.delRelationForm.validate(async(valid)=>{
 if(valid){
   try {
     const {data}=await this.$ajax({

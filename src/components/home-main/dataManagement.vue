@@ -30,12 +30,13 @@
         </el-table-column>
         <!-- <el-table-column prop="extract" label="抽取" ></el-table-column> -->
         <!-- <el-table-column prop="mark" label="标记" ></el-table-column>
-        <el-table-column prop="bank" label="入库" ></el-table-column> -->
+        <el-table-column prop="bank" label="入库" ></el-table-column> item.substring( 0,item.lastIndexOf('.'))  -->
         <el-table-column label="操作" >
           <template slot-scope="scope">
-            <el-button @click="delData(scope.row)" type="text" size="small">删除</el-button>
-        <el-button type="text" size="small" @click="pushextract(scope.row)">抽取</el-button>
-        <el-button type="text" size="small" @click="pushmark(scope.row)">标注</el-button>
+            <!-- <el-button @click="delData(scope.row)" type="text" size="small">删除</el-button> -->
+        <el-button type="text" size="small" v-if="scope.row.name.substring( scope.row.name.lastIndexOf('.')+1)=='txt'" @click="pushextract(scope.row)">抽取</el-button>
+        <el-button type="text" size="small" v-if="scope.row.name.substring( scope.row.name.lastIndexOf('.')+1)=='txt'" @click="pushmark(scope.row)">标注</el-button>
+        <el-button type="text" size="small" v-else @click="pushextract(scope.row)">入库</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -86,21 +87,21 @@ export default {
   filters:{
     //列表抽取，标记，入库状态
 extract(value){
-if(value){
+if(value==='true'){
   return '已抽取'
 }else{
   return '未抽取'
 }
 },
 mark(value){
-if(value){
+if(value==='true'){
   return '已标记'
 }else{
   return '未标记'
 }
 },
 bank(value){
-if(value){
+if(value==='true'){
   return '已入库'
 }else{
   return '未入库'
@@ -112,6 +113,7 @@ if(value){
     async getFileList(){
       const {data} =await this.$ajax({
         url:'/hehe/fm_getFileList',
+        params:{dirpath:this.$route.query.dataPath}
       })
       this.tableData=data.map(item=>{
         return{
@@ -155,29 +157,7 @@ if(value){
 
 
     },
-    //正则改标签颜色 //点击标注
-    regs() {
-      var mark = this.markList
-      mark.forEach((item, index) => {
-        if (item.tb) {
-          var searchText = item.tb
-          var text = item.text
-          if (text.indexOf(searchText) >= 0) {
-            var text = text.replace(searchText, '<span style=color:red;>' + searchText + '</span>')
-          }
-          mark[index].text = text
-        }
-        if (item.ta) {
-          var searchText = item.ta
-          var text = item.text
-          if (text.indexOf(searchText) >= 0) {
-            var text = text.replace(searchText, '<span style=color:red;>' + searchText + '</span>')
-          }
-          mark[index].text = text
-        }
-      })
-      console.log(this.markList)
-    },
+
     //表格多选
     handleSelectionChange(val) {
       this.multipleSelection = val

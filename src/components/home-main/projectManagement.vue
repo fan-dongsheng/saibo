@@ -3,19 +3,21 @@
     <el-button type="primary" class="add" size="medium" @click="showAddfolderDialog">新建项目</el-button>
     <el-card v-loading="tableLoading">
       <el-table :data="tableProject" style="width: 100%">
-        <el-table-column prop="name" label="项目名称"></el-table-column>
-        <el-table-column label="数据集">
+        <el-table-column prop="name" label="项目名称" width="100"></el-table-column>
+        <el-table-column label="数据集" show-overflow-tooltip>
           <template slot-scope="scope" class>
-            <el-button size="mini" type="text" @click="pushDetail(scope.$index, scope.row)">{{scope.row.dataPath}}</el-button>
-            
+            <el-button
+              size="mini"
+              type="text"
+              @click="pushDetail(scope.$index, scope.row)"
+            >{{scope.row.dataPath}}</el-button>
           </template>
         </el-table-column>
         <!-- <el-table-column prop="data" label="数据集"></el-table-column> -->
-        
-         <el-table-column label="本体图">
+
+        <el-table-column label="本体图">
           <template slot-scope="scope" class>
-            <el-button size="mini" type="text" >{{scope.row.modelPath}}</el-button>
-            
+            <el-button size="mini" type="text">{{scope.row.modelPath}}</el-button>
           </template>
         </el-table-column>
         <!-- <el-table-column prop="atlas" label="图谱"></el-table-column> -->
@@ -29,18 +31,17 @@
         </el-table-column>
       </el-table>
       <!-- 分页 -->
-    <div class="pag">
-      <el-pagination
-        background
-        layout="total,prev, pager, next,jumper"
-        :current-page="page.currentPage"
-        :total="page.total"
-        @current-change="getCurrentPage"
-       
-      ></el-pagination>
-    </div>
+      <div class="pag">
+        <el-pagination
+          background
+          layout="total,prev, pager, next,jumper"
+          :current-page="page.currentPage"
+          :total="page.total"
+          @current-change="getCurrentPage"
+        ></el-pagination>
+      </div>
     </el-card>
-    
+
     <el-dialog width="600px" title="新增项目" :visible.sync="addfolderDialog.visible">
       <div v-loading="addfolderDialog.loading" class="dialog-wrapper">
         <el-form
@@ -53,33 +54,33 @@
           <el-form-item label="项目名称:" prop="name">
             <el-input v-model="addfolderDialog.form.name" autocomplete="off"></el-input>
           </el-form-item>
-           <el-form-item label="数据集存储地址:" prop="dataPath" >
+          <el-form-item label="数据集存储地址:" prop="dataPath">
             <el-input v-model="addfolderDialog.form.dataPath" autocomplete="off"></el-input>
           </el-form-item>
-           <el-form-item label="模型存储地址:" prop="modelPath">
+          <el-form-item label="模型存储地址:" prop="modelPath">
             <el-input v-model="addfolderDialog.form.modelPath" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="描述:" >
+          <el-form-item label="描述:">
             <el-input v-model="addfolderDialog.form.description" autocomplete="off"></el-input>
           </el-form-item>
           <!-- <el-form-item label="数据集存储地址:" > -->
-            <!-- <input type="file" :id="id" name="image" class="getImgUrl_file" @change="preview($event)"> -->
-            <!-- <el-upload class="upload"  action :http-request="dataUpload" :on-success="success"> -->
+          <!-- <input type="file" :id="id" name="image" class="getImgUrl_file" @change="preview($event)"> -->
+          <!-- <el-upload class="upload"  action :http-request="dataUpload" :on-success="success"> -->
           <!-- <div class="up">
             <i class="el-icon-plus avatar-uploader-icon"></i>
             <div class="el-upload__text">点击上传</div>
-          </div> -->
+          </div>-->
 
           <!-- <el-button type="primary">点击上传</el-button>
-        </el-upload> -->
-            <!-- <el-input v-model="addfolderDialog.form.dataPath" autocomplete="off"></el-input> -->
+          </el-upload>-->
+          <!-- <el-input v-model="addfolderDialog.form.dataPath" autocomplete="off"></el-input> -->
           <!-- </el-form-item> -->
           <!-- <el-form-item label="模型存储地址:" >
             <el-upload class="upload"  action :http-request="modelUpload">
 
           <el-button type="primary">点击上传</el-button>
-        </el-upload> -->
-            <!-- <el-input v-model="addfolderDialog.form.modelPath" autocomplete="off"></el-input> -->
+          </el-upload>-->
+          <!-- <el-input v-model="addfolderDialog.form.modelPath" autocomplete="off"></el-input> -->
           <!-- </el-form-item> -->
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -98,13 +99,13 @@
           :rules="editfolderDialog.rules"
           size="mini"
         >
-          <el-form-item label="项目名称:" prop="name" >
+          <el-form-item label="项目名称:" prop="name">
             <el-input v-model="editfolderDialog.form.name" autocomplete="off" disabled></el-input>
           </el-form-item>
-           <el-form-item label="数据集存储地址:" prop="dataPath" >
+          <el-form-item label="数据集存储地址:" prop="dataPath">
             <el-input v-model="editfolderDialog.form.dataPath" autocomplete="off"></el-input>
           </el-form-item>
-           <el-form-item label="模型存储地址:" prop="modelPath">
+          <el-form-item label="模型存储地址:" prop="modelPath">
             <el-input v-model="editfolderDialog.form.modelPath" autocomplete="off"></el-input>
           </el-form-item>
           <!-- <el-form-item label="数据集存储地址:" >           
@@ -116,7 +117,7 @@
             <el-upload class="upload"  action :http-request="modelUpload">
           <el-button type="primary">点击上传</el-button>
         </el-upload>         
-          </el-form-item> -->
+          </el-form-item>-->
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" type="primary" @click="handeleditfolder">保 存</el-button>
@@ -130,18 +131,18 @@
 <script>
 export default {
   /**
- * @author: dsvan
- * @date: 2020年6月09日14:51:40
- * @Last Modified by: dsvan
- * @Last Modified time: 2020-05-01 09:31:30
- * @description: 项目管理
- */
+   * @author: dsvan
+   * @date: 2020年6月09日14:51:40
+   * @Last Modified by: dsvan
+   * @Last Modified time: 2020-05-01 09:31:30
+   * @description: 项目管理
+   */
   data() {
     return {
-      id:'',
-      imgDataUrl:'',
-      dataParams:{}, //上传文件file参数
-      modelParams:{},
+      id: '',
+      imgDataUrl: '',
+      dataParams: {}, //上传文件file参数
+      modelParams: {},
       //新增项目弹层
       addfolderDialog: {
         loading: false,
@@ -149,8 +150,8 @@ export default {
         form: {
           name: '', // 项目名称
           dataPath: '', //数据集成位置
-          modelPath: '' ,//模型存储位置
-          description:'' //描述
+          modelPath: '', //模型存储位置
+          description: '' //描述
         },
         rules: {
           name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
@@ -158,7 +159,7 @@ export default {
           modelPath: [{ required: true, message: '请输入模型存储地址', trigger: 'blur' }]
         }
       },
-       //编辑项目弹层
+      //编辑项目弹层
       editfolderDialog: {
         loading: false,
         visible: false,
@@ -194,40 +195,34 @@ export default {
 
   methods: {
     //点击文件名跳转详情页
-    pushDetail(index,row){
-this.$router.push(`/dataManagement/${row.name}?dataPath=${row.data}`)
+    pushDetail(index, row) {
+      this.$router.push(`/dataManagement/${row.name}?dataPath=${row.dataPath}`)
     },
     //获取list
-    async getProjectList(){
-      
+    async getProjectList() {
       try {
-        this.tableLoading=true
-        const {data}=await this.$ajax({
-        url:'/hehe/pm_getProjectList',
-        
-      })
-      console.log(data,'获取list')
-      this.tableProject=data.map((item,i)=>{
-        return {
-          name:item[0],
-          dataPath:item[1],
-          modelPath:item[2]
-        }
-        
-      })
-      this.tableLoading=false
-      console.log(this.tableProject);
-      this.page.total=data.length
+        this.tableLoading = true
+        const { data } = await this.$ajax({
+          url: '/hehe/pm_getProjectList'
+        })
+        console.log(data, '获取list')
+        this.tableProject = data.map((item, i) => {
+          return {
+            name: item[0],
+            dataPath: item[1],
+            modelPath: item[2]
+          }
+        })
+        this.tableLoading = false
+        console.log(this.tableProject)
+        this.page.total = data.length
       } catch (error) {
-        console.log(error,'获取数据失败');
-        this.tableLoading=false
+        console.log(error, '获取数据失败')
+        this.tableLoading = false
       }
-      
-      
     },
-    success(event, file, fileList){
-console.log(event, file, fileList,'1111');
-
+    success(event, file, fileList) {
+      console.log(event, file, fileList, '1111')
     },
     //上传文件
     dataUpload(params) {
@@ -253,66 +248,58 @@ console.log(event, file, fileList,'1111');
 
       this.$message.success('上传成功')
       console.log(res, '新增成功')
-      
     },
     //修改项目
     handleEdit(index, row) {
-      console.log(row);
-      
-      this.editfolderDialog.visible=true
-      this.editfolderDialog.form=row
+      console.log(row)
+
+      this.editfolderDialog.visible = true
+      this.editfolderDialog.form = row
     },
     //修改项目
-     handeleditfolder(){
-      this.$refs.editfolderForm.validate(async(valid)=>{
-if(valid){
- try {
-        const res= await this.$ajax({
-        url:`/hehe/pm_modProject`,
-        params:{
-          name:this.editfolderDialog.form.name,
-          datapath:this.editfolderDialog.form.dataPath,
-          modelpath:this.editfolderDialog.form.modelPath
-        }
-        
-      })
-     
-      this.editfolderDialog.visible=false
-      this.$message.success('修改成功')
-      this.getProjectList()
-      } catch (error) {
-        this.$message.error('修改失败')
-      }
-}else {
-            console.log('error submit!!');
-              this.addfolderDialog.loading = false
-            return false;
-          }
+    handeleditfolder() {
+      this.$refs.editfolderForm.validate(async valid => {
+        if (valid) {
+          try {
+            const res = await this.$ajax({
+              url: `/hehe/pm_modProject`,
+              params: {
+                name: this.editfolderDialog.form.name,
+                datapath: this.editfolderDialog.form.dataPath,
+                modelpath: this.editfolderDialog.form.modelPath
+              }
+            })
 
+            this.editfolderDialog.visible = false
+            this.$message.success('修改成功')
+            this.getProjectList()
+          } catch (error) {
+            this.$message.error('修改失败')
+          }
+        } else {
+          console.log('error submit!!')
+          this.addfolderDialog.loading = false
+          return false
+        }
       })
-     
-      
-      
     },
     //删除项目
     handleDelete(index, row) {
-      
       this.$confirm('您确定要删除此项目吗, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          const res= this.$ajax({
-            url:`/hehe/pm_delProject`,
-            params:{
-              key:row.name
+          const res = this.$ajax({
+            url: `/hehe/pm_delProject`,
+            params: {
+              key: row.name
             }
-
           })
           this.getProjectList()
-          console.log(res,'删除成功');
-          
+          console.log(res, '删除成功')
+
           this.$message({
             type: 'success',
             message: '删除成功!'
@@ -330,46 +317,44 @@ if(valid){
     },
     //新增项目
     async handelAddfolder() {
-      this.$refs.addfolderForm.validate(async (valid)=>{
+      this.$refs.addfolderForm.validate(async valid => {
         if (valid) {
           try {
-       this.addfolderDialog.loading = true
-      // let dataUp={
-      //   name:this.addfolderDialog.form.name,
-      //   datapath:`/home/gnx/${this.dataParams.name}`,
-      //   modelpath:`/home/gnx/${this.modelParams.name}`
-      // }
-      console.log(this.dataParams.name,this.modelParams.name);
-      
-      console.log(this.addfolderDialog,'jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjklllkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
-      
-      const res=await this.$ajax({
-      url:`/hehe/pm_addProject?name=${this.addfolderDialog.form.name}&datapath=${this.addfolderDialog.form.dataPath}&modelpath=${this.addfolderDialog.form.modelPath}`
-      })
-      console.log(res,'add');
-      this.$message.success('保存成功')
-      this.addfolderDialog.visible = false
-      this.addfolderDialog.loading = false
-      this.getProjectList()
-          } catch (error) {
-            console.log(error,'新增失败');
-              this.addfolderDialog.loading = false
-          }
+            this.addfolderDialog.loading = true
+            // let dataUp={
+            //   name:this.addfolderDialog.form.name,
+            //   datapath:`/home/gnx/${this.dataParams.name}`,
+            //   modelpath:`/home/gnx/${this.modelParams.name}`
+            // }
+            console.log(this.dataParams.name, this.modelParams.name)
 
-          } else {
-            console.log('error submit!!');
-              this.addfolderDialog.loading = false
-            return false;
+            console.log(this.addfolderDialog, 'jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjklllkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk')
+
+            const res = await this.$ajax({
+              url: `/hehe/pm_addProject?name=${this.addfolderDialog.form.name}&datapath=${this.addfolderDialog.form.dataPath}&modelpath=${this.addfolderDialog.form.modelPath}`
+            })
+            console.log(res, 'add')
+            this.$message.success('保存成功')
+            this.addfolderDialog.visible = false
+            this.addfolderDialog.loading = false
+            this.getProjectList()
+          } catch (error) {
+            console.log(error, '新增失败')
+            this.addfolderDialog.loading = false
           }
+        } else {
+          console.log('error submit!!')
+          this.addfolderDialog.loading = false
+          return false
+        }
       })
-     
     },
     // 展示新增项目弹窗
     showAddfolderDialog() {
       this.addfolderDialog.visible = true
       this.addfolderDialog.loading = false
     },
-    
+
     // 请求当前页数;
     getCurrentPage(newPage) {
       this.page.currentPage = newPage
@@ -378,8 +363,8 @@ if(valid){
       //掉接口
     }
   },
-  created(){
- this.getProjectList()
+  created() {
+    this.getProjectList()
   }
 }
 </script>

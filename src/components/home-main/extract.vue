@@ -13,11 +13,23 @@
         </div>
         <div class="card1">
           <div class="bus">
-            <div class="box" v-for="(val,key,index) in teamList" :key="index">
-              <div class="text">{{ key }}</div>
-              <div class="line"></div>
-              <div class="icon"></div>
-            </div>
+            <el-popover
+              class="box"
+             width="200"
+              v-for="(val,key,index) in teamList"
+              :key="index"
+              placement="top-start"
+              title="路径"
+              trigger="hover"
+              :content="val"
+            >
+              <div slot="reference"  style="padding-top: 21px;
+        padding-left: 30px;">
+                <div class="text">{{ key }}</div>
+                <div class="line"></div>
+                <div class="icon"></div>
+              </div>
+            </el-popover>
           </div>
         </div>
       </el-card>
@@ -27,7 +39,8 @@
         </div>
         <div class="card1">
           <div class="bus">
-            <div class="box" v-for="item in figureList" :key="item.id">
+            <div class="box" style="padding-top: 21px;
+        padding-left: 30px;" v-for="item in figureList" :key="item.id">
               <div class="text">{{ item.name }}</div>
               <div class="line"></div>
               <div class="icon"></div>
@@ -286,8 +299,6 @@ export default {
         box-sizing: border-box;
         cursor: pointer;
         margin-bottom: 25px;
-        padding-top: 21px;
-        padding-left: 30px;
 
         background-size: cover;
         position: relative;
