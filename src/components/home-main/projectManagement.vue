@@ -1,8 +1,17 @@
 <template>
   <div class="projectManagement">
-    <el-button type="primary" class="add" size="medium" @click="showAddfolderDialog">新建项目</el-button>
     <el-card v-loading="tableLoading">
-      <el-table :data="tableProject" style="width: 100%">
+      <div slot="header" class="clearfix">
+        <el-button type="primary" class="add" size="medium" @click="showAddfolderDialog">新建项目</el-button>
+      </div>
+      <el-table
+      
+        border
+        :data="tableProject"
+        style="width: 100%"
+        :header-cell-style="{ background: '#E5F0FF',color:'#6D87A7',textAlign:'center' }"
+        :cell-style="cellstyle"
+      >
         <el-table-column prop="name" label="项目名称" width="100"></el-table-column>
         <el-table-column label="数据集" show-overflow-tooltip>
           <template slot-scope="scope" class>
@@ -182,6 +191,13 @@ export default {
           figure: '',
           atlas: '',
           description: '123131'
+        },
+        {
+          name: '质量图谱',
+          data: 'a.txt',
+          figure: '',
+          atlas: '',
+          description: '123131'
         }
       ],
       count: '', // 总页数
@@ -194,6 +210,11 @@ export default {
   },
 
   methods: {
+    //表格属性
+    cellstyle({row, column, rowIndex, columnIndex}){
+return 'text-align:center;height:46px;line-height:46px;padding:0;'
+
+    },
     //点击文件名跳转详情页
     pushDetail(index, row) {
       this.$router.push(`/dataManagement/${row.name}?dataPath=${row.dataPath}`)
@@ -375,15 +396,22 @@ export default {
   position: relative;
   border: 1px solid rgb(242, 243, 244);
   .add {
-    border-radius: 2px;
-    position: absolute;
-    top: 24px;
-    right: 24px;
+    border-radius: 4px;
   }
-  .el-card {
+  /deep/ .el-card {
     border-radius: 2px;
     margin: 24px;
-    margin-top: 88px;
+    padding: 2px 20px;
+    .el-card__header {
+      padding: 20px 0;
+    }
+    .el-card__body {
+      padding: 0;
+    }
+    .el-table {
+      margin-top: 20px;
+      border-radius: 4px;
+    }
     /deep/ .el-table thead {
       color: #333333;
       font-weight: 500;

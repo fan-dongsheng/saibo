@@ -31,6 +31,7 @@ export default {
 body {
   display: block;
   margin: 0px;
+  font-family:MicrosoftYaHei;
 }
 html,body,#app{
   width: 100%;

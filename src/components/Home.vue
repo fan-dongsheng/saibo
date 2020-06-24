@@ -1,11 +1,12 @@
 <template>
   <el-container class="home-container">
     <el-header style="height:60px;">
-      <div>
-        <img src="../assets/logo.png" class="img-home-logo" alt />
+      <div class="img-home-logo">
+        <!-- <img src="../assets/logo.png" class="img-home-logo" alt /> -->
         
       </div>
-    
+    <span style="font-size:20px;color:rgba(255,255,255,1);margin-left:20px;
+text-shadow:-6.123234262925839e-17px 1px 1px rgba(70,70,70,0.31);">航天赛博</span>
     </el-header>
     <el-container>
       <el-aside width="180px">
@@ -31,7 +32,7 @@
           </el-menu-item>
         </el-menu>
       </el-aside>
-      <el-main style="background:#F2F3F4">
+      <el-main >
         <!-- 路由占位符 -->
         <router-view></router-view>
 
@@ -58,7 +59,7 @@ export default {
           index: 'projectManagement',
           title: '项目管理',
           name: 'projectManagement',
-          icon: 'icon1',
+          icon: '1',
           component: '@/components/projectManagement.vue',
           path: 'projectManagement',
           menuorigin: 'local'
@@ -67,7 +68,7 @@ export default {
           index: 'dataManagement',
           title: '数据管理',
           name: 'dataManagement',
-          icon: 'icon2',
+          icon: '2',
           component: '@/components/dataManagement.vue',
           path: 'dataManagement',
           menuorigin: 'local'
@@ -76,7 +77,7 @@ export default {
           index: 'modelManagement',
           title: '模型管理',
           name: 'modelManagement',
-          icon: 'icon3',
+          icon: '3',
           component: '@/components/modelManagement.vue',
           path: 'modelManagement',
           menuorigin: 'local'
@@ -85,7 +86,7 @@ export default {
           index: 'dataImport',
           title: '数据导入',
           name: 'dataImport',
-          icon: 'icon4',
+          icon: '4',
           component: '@/components/dataImport.vue',
           path: 'dataImport',
           menuorigin: 'local'
@@ -138,7 +139,7 @@ export default {
 }
 
 .el-header {
-  background-color: #396FFF;
+  background-color: #2682FF;
   display: flex;
   
   padding-left: 0;
@@ -154,10 +155,15 @@ export default {
   }
 }
 .el-aside {
+  background:rgba(246,246,246,1);
+  
   .el-menu {
+    color:#6D87A7;
     border-right: none;
-    
+    margin-top: 20px;
+    background:rgba(246,246,246,1);
     .el-menu-item{
+      color:#6D87A7;
       height: 62px;
       line-height: 62px;
     }
@@ -167,8 +173,10 @@ export default {
   //border-color: #C7CEDA !important;
 }
 .img-home-logo {
-  width: 190px;
-  height: inherit;
+  width: 50px;
+  height: 40px;
+  background: url(../assets/Logo.png) no-repeat;
+  background-size: cover;
 }
 .icom {
   margin-right: 10px;
@@ -178,7 +186,7 @@ export default {
   height: 23px;
 }
 .el-main {
-  height: calc(100vh - 80px);
+  height: calc(100vh - 60px);
   display: block;
   flex: 1;
   flex-basis: auto;
