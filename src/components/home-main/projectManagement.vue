@@ -165,8 +165,8 @@ export default {
         visible: false,
         form: {
           name: '', // 项目名称
-          dataPath: '', //数据集成位置
-          modelPath: '', //模型存储位置
+          dataPath: '/home/xl/project/ChineseNER/tensorflow/temp14', //数据集成位置
+          modelPath: '/home/gnx/tmp/pycharm_project_180/data/csvdata', //模型存储位置
           description: '' //描述
         },
         rules: {

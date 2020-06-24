@@ -452,10 +452,17 @@ if(valid){
       url:'/hehe/delete_entity',
       params:this.delEntDilog.form
     })
-    console.log(data,'删除成功');
+    //判断
+    if(data=='fail'){
+      this.delEntDilog.visible = false
+    this.$message.error('实体不存在')
+    }else{
+console.log(data,'删除成功');
     this.getJson()
     this.delEntDilog.visible = false
     this.$message.success('删除实体成功')
+    }
+    
   } catch (error) {
     console.log(error,'删除失败');
     this.delEntDilog.visible = false
@@ -539,10 +546,16 @@ try {
       url:'/hehe/delete_relation',
       params:this.delRelationDilog.form
     })
-    console.log(data,'删除成功');
+    if(data=='fail'){
+       this.delRelationDilog.visible = false
+    this.$message.error('关系三元组不存在')
+    }else{
+console.log(data,'删除成功');
     this.getJson()
     this.delRelationDilog.visible = false
     this.$message.success('删除成功')
+    }
+    
   } catch (error) {
     console.log(error,'删除失败');
     this.delRelationDilog.visible = false

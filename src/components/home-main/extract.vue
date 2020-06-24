@@ -144,7 +144,7 @@ this.marLoading = true
         const { data } = await this.$ajax({
           url: '/hehe/fm_labelSave',
           params: {
-            filepath: `${this.$route.query.dataPath}/tmp/test02.txt`
+            filepath: `${this.$route.query.dataPath}/${this.$route.params.name}`
           }
         })
         this.marLoading = false
@@ -193,7 +193,7 @@ this.EartLoading = false
           const { data } = await this.$ajax({
           url: '/hehe/fm_extract',
           params: {
-            input_file: `${this.$route.query.dataPath}/test02.txt`
+            input_file: `${this.$route.query.dataPath}/${this.$route.params.name}`
           }
         })
         console.log(data, '实体结果')
