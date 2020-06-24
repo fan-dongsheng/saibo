@@ -245,9 +245,11 @@ display: flex;
         font-size: 20px;
         font-weight: 700;
         margin: 24px;
+         margin-top: 0;
       }
       .ent{
         margin: 24px;
+       
       }
       .relation{
 margin: 24px;

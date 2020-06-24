@@ -3,15 +3,18 @@
     <el-card>
       <div slot="header" class="clearfix">
     <div class="title">数据管理</div>
-    <el-button type="success" class="extrt" size="medium" @click="allEart">批量抽取</el-button>
-    <el-button type="success" size="medium" @click="allBank">批量入库</el-button>
-    <el-button type="primary" size="medium" style="margin-left:570px" @click="$router.back()">上一步</el-button>
+    <el-button type="success" class="extrt" size="small" @click="allEart">批量抽取</el-button>
+    <el-button type="success" size="small" @click="allBank">批量入库</el-button>
+    <el-button type="primary" size="small" style="margin-left:30px" @click="$router.back()">上一步</el-button>
   </div>  
       <el-table
+      border
         ref="multipleTable"
         :data="tableData"
         tooltip-effect="dark"
         style="width: 100%"
+        :header-cell-style="{ background: '#E5F0FF',color:'#6D87A7',textAlign:'center' }"
+        :cell-style="cellstyle"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55"></el-table-column>
@@ -109,6 +112,11 @@ if(value==='true'){
 }
   },
   methods: {
+        //表格属性
+    cellstyle({row, column, rowIndex, columnIndex}){
+return 'text-align:center;height:46px;line-height:46px;padding:0;border-right: 1px solid #DBE8FB;border-bottom: 1px solid #DBE8FB;'
+
+    },
     //入库
    async pushbank(){
 const {data} =await this.$ajax({
@@ -231,7 +239,7 @@ if(this.multipleSelection.length<=0){
     align-items: center;
     .extrt{
       margin-left: 30px;
-      margin-right: 30px;
+      margin-right: 20px;
     }
   }
   .el-card {
@@ -243,6 +251,26 @@ if(this.multipleSelection.length<=0){
       font-weight: 700;
     }
     
+  }
+  /deep/ .el-card {
+    border-radius: 2px;
+    margin: 24px;
+    padding: 2px 20px;
+    padding-bottom: 10px;
+    .el-card__header {
+      padding: 20px 0;
+    }
+    .el-card__body {
+      padding: 0;
+    }
+    .el-table {
+      margin-top: 20px;
+      border-radius: 4px;
+    }
+    /deep/ .el-table thead {
+      color: #333333;
+      font-weight: 500;
+    }
   }
  
 }

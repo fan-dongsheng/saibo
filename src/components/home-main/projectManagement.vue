@@ -2,7 +2,7 @@
   <div class="projectManagement">
     <el-card v-loading="tableLoading">
       <div slot="header" class="clearfix">
-        <el-button type="primary" class="add" size="medium" @click="showAddfolderDialog">新建项目</el-button>
+        <el-button type="primary" class="add" size="small" @click="showAddfolderDialog">新建项目</el-button>
       </div>
       <el-table
       
@@ -32,9 +32,16 @@
         <!-- <el-table-column prop="atlas" label="图谱"></el-table-column> -->
         <el-table-column prop="description" label="备注"></el-table-column>
         <el-table-column label="操作">
-          <template slot-scope="scope" class>
-            <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini" type="text" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <template slot-scope="scope" >
+            <div class="imgs">
+              <span class="imgs-a"  @click="handleEdit(scope.$index, scope.row)"></span>
+              <span class="imgs-b"  @click="handleDelete(scope.$index, scope.row)"></span>
+           
+            </div>
+           
+            
+            <!-- <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button size="mini" type="text" @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
             <!-- <el-button size="mini" type="text" @click="handleDown(scope.$index, scope.row)">导出</el-button> -->
           </template>
         </el-table-column>
@@ -43,7 +50,7 @@
       <div class="pag">
         <el-pagination
           background
-          layout="total,prev, pager, next,jumper"
+          layout="prev, pager, next,jumper"
           :current-page="page.currentPage"
           :total="page.total"
           @current-change="getCurrentPage"
@@ -212,7 +219,7 @@ export default {
   methods: {
     //表格属性
     cellstyle({row, column, rowIndex, columnIndex}){
-return 'text-align:center;height:46px;line-height:46px;padding:0;'
+return 'text-align:center;height:46px;line-height:46px;padding:0;border-right: 1px solid #DBE8FB;border-bottom: 1px solid #DBE8FB;'
 
     },
     //点击文件名跳转详情页
@@ -395,6 +402,29 @@ return 'text-align:center;height:46px;line-height:46px;padding:0;'
   height: 100%;
   position: relative;
   border: 1px solid rgb(242, 243, 244);
+  .imgs{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    .imgs-a{
+      display: inline-block;
+      background: url(../../assets/indexNew/edit.png) no-repeat;
+      background-size: cover;
+      width: 21px;
+    height: 21px;
+    cursor: pointer;
+    }
+    .imgs-b{
+  margin-left: 10px;
+      display: inline-block;
+      background: url(../../assets/indexNew/del.png) no-repeat;
+      background-size: cover;
+      width: 21px;
+    height: 22px;
+    cursor: pointer;
+    }
+  }
   .add {
     border-radius: 4px;
   }

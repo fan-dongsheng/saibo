@@ -2,22 +2,25 @@
   <div class="modelManagement">
     <!-- 模型管理首页 -->
     <!-- echarts -->
-    <el-button
+    
+    
+    <el-card style="margin:24px;">
+      <div slot="header" class="clearfix">
+   <el-button
       type="primary"
-      size="medium"
-      style="margin:24px;margin-bottom:0"
+      size="small"
+      
       @click="$router.back()"
     >上一步</el-button>
     <div v-if="activeVerd!==9" style="float:left">
-      <el-button type="primary" size="medium" style="margin:24px;margin-bottom:0" @click="addEntDilog.visible=true">新建实体</el-button>
-    <el-button type="primary" size="medium" style="margin:24px;margin-bottom:0" @click="editEntDilog.visible=true">修改实体</el-button>
-    <el-button type="primary" size="medium" style="margin:24px;margin-bottom:0" @click="delEntDilog.visible=true">删除实体</el-button>
-    <el-button type="primary" size="medium" style="margin:24px;margin-bottom:0" @click="addRelationDilog.visible=true">新建关系</el-button>
-    <el-button type="primary" size="medium" style="margin:24px;margin-bottom:0" @click="editRelationDilog.visible=true">修改关系</el-button>
-    <el-button type="primary" size="medium" style="margin:24px;margin-bottom:0" @click="delRelationDilog.visible=true">删除关系</el-button>
+      <el-button type="primary" size="small"  @click="addEntDilog.visible=true">新建实体</el-button>
+    <el-button type="primary" size="small"  @click="editEntDilog.visible=true">修改实体</el-button>
+    <el-button type="primary" size="small"  @click="delEntDilog.visible=true">删除实体</el-button>
+    <el-button type="primary" size="small"  @click="addRelationDilog.visible=true">新建关系</el-button>
+    <el-button type="primary" size="small"  @click="editRelationDilog.visible=true">修改关系</el-button>
+    <el-button type="primary" size="small" style="margin-right:10px;"  @click="delRelationDilog.visible=true">删除关系</el-button>
     </div>
-    
-    <el-card style="margin:24px;">
+  </div> 
       <div class="modelM">
         <div class="version">
           版本号
@@ -425,14 +428,14 @@ if(valid){
     })
     console.log(data,'删除成功');
     this.getJson()
-    this.addEntDilog.visible = false
+    this.delEntDilog.visible = false
   } catch (error) {
     console.log(error,'删除失败');
-    this.addEntDilog.visible = false
+    this.delEntDilog.visible = false
   }
 }else{
    console.log('error submit!!');
-              this.addEntDilog.visible= false
+              this.delEntDilog.visible= false
             return false;
 }
 })
@@ -887,6 +890,20 @@ this.echDataJson.push(...typeList)
 <style lang='less' scoped>
 .modelManagement {
   overflow: hidden;
+  /deep/ .el-card {
+    border-radius: 2px;
+    margin: 24px;
+    padding: 2px 20px;
+    padding-bottom: 10px;
+    .el-card__header {
+      padding: 20px 0;
+    }
+    .el-card__body {
+      padding: 20px 0;
+
+    }
+   
+  }
   .modelM {
     display: flex;
     .version {
