@@ -138,7 +138,7 @@ export default {
   methods: {
     //标注结果
     async markResult() {
-      if(this.$route.query.extract=='标记'){
+      if(this.$route.params.extract=='标记'){
 this.marLoading = true
       try {
         const { data } = await this.$ajax({
@@ -160,6 +160,11 @@ this.marLoading = true
     },
     //抽取结果
     async exrtResult() {
+      
+      
+      if(this.$route.params.extract=='抽取'){
+
+      
       try {
         this.EartLoading = true
         //判断是不是批量抽取
@@ -207,6 +212,7 @@ this.EartLoading = false
         this.EartLoading = false
         // this.$message.error('获取实体失败')
       }
+    }
     },
     //滑动取词
     getWord() {

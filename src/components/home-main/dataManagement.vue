@@ -1,6 +1,6 @@
 <template>
   <div class="dataManagement">
-    <el-card>
+    <el-card v-loading="daLoading">
       <div slot="header" class="clearfix">
     <div class="title">数据管理</div>
     <el-button type="success" class="extrt" size="small" @click="allEart">批量抽取</el-button>
@@ -52,6 +52,7 @@
 export default {
   data() {
     return {
+      daLoading:false,
       markList: [
         { text: '中国第一款陆基超音速巡航导弹长剑-100', ta: '中国', tb: '剑-1' },
         { text: '正则匹配字符串改变颜色', ta: '正则', tb: '颜色' }
@@ -154,6 +155,8 @@ if(this.multipleSelection.length<=0){
     },
     //获取列表数据
     async getFileList(){
+      try {
+         this.daLoading=true
       const {data} =await this.$ajax({
         url:'/hehe/fm_getFileList',
         params:{dirpath:this.$route.query.dataPath}
@@ -168,7 +171,13 @@ if(this.multipleSelection.length<=0){
         }
       })
       console.log(data,'获取文件列表成功');
-      
+      setTimeout(() => {
+        this.daLoading=false
+      }, 300);
+      } catch (error) {
+        this.daLoading=false
+      }
+     
     },
     //删除数据
     async delData(row){

@@ -4,7 +4,7 @@
     <!-- echarts -->
     
     
-    <el-card style="margin:24px;">
+    <el-card>
       <div slot="header" class="clearfix">
    <el-button
       type="primary"
@@ -22,27 +22,38 @@
     </div>
   </div> 
       <div class="modelM">
-        <div class="version">
-          版本号
-          <div class="ver-cont">
-            <div
-              class="ver-cont1"
-              :class="{active:index==activeVerd}"
-              v-for="(item,index) in verD"
-              :key="index"
-              @click="activeVer(index,item.d)"
-            >{{item.d}}</div>
-            <!-- <div class="ver-cont2" >2</div> -->
-          </div>
-        </div>
-        <div class="json">
-          json
-          <div class="jsonBorder">
-            <pre style="background-color: rgb(1, 132, 252,0.5);border-radius: 5px;padding:10px;"><code id="json"></code></pre>
-          </div>
-        </div>
+        <el-card class="cardddd">
+          <div class="version">
+                    版本号
+                    <div class="ver-cont">
+                      <div
+                        class="ver-cont1"
+                        :class="{active:index==activeVerd}"
+                        v-for="(item,index) in verD"
+                        :key="index"
+                        @click="activeVer(index,item.d)"
+                      >{{item.d}}</div>
+                      <!-- <div class="ver-cont2" >2</div> -->
+                    </div>
+                  </div>
+        </el-card>
+        
+        <el-card class="cardddd" style="flex:1;">
+            <div class="json" >
+                      json
+                      <div class="jsonBorder" v-loading="jsonLoading">
+                        <pre style="background-color: rgb(1, 132, 252,0.5);border-radius: 5px;padding:10px;"><code id="json"></code></pre>
+                      </div>
+                    </div>
+        </el-card>
+        
+
         <!-- echarts ======================================================-->
-        <div id="main" style="width: 600px;height:600px;"></div>
+
+        <el-card class="cardddd">
+<div id="main" style="width: 600px;height:600px;" v-loading="echLoading"></div>
+        </el-card>
+        
       </div>
     </el-card>
     <!-- //新建实体弹窗 -->
@@ -168,19 +179,19 @@
           :rules="editRelationDilog.rules"
           size="mini"
         >
-          <el-form-item label="实体source:" prop="ent1" >
+          <el-form-item label="实体source(索引: 1):" prop="ent1" >
             <el-input v-model="editRelationDilog.form.ent1" autocomplete="off" ></el-input>
           </el-form-item>
-           <el-form-item label="实体target:" prop="ent2">
+           <el-form-item label="实体target(索引：2):" prop="ent2">
             <el-input v-model="editRelationDilog.form.ent2" autocomplete="off"></el-input>
           </el-form-item>
-           <el-form-item label="关系:"  prop="rel">
+           <el-form-item label="关系(索引：0):"  prop="rel">
             <el-input v-model="editRelationDilog.form.rel" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="搜索索引:"  prop="search_index">
+          <el-form-item label="要修改的索引:"  prop="search_index">
             <el-input v-model="editRelationDilog.form.search_index" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="new关系:"  prop="new_value">
+          <el-form-item label="修改值为 :"  prop="new_value">
             <el-input v-model="editRelationDilog.form.new_value" autocomplete="off"></el-input>
           </el-form-item>
           <!-- <el-form-item label="文件路径:" prop="file_path" >
@@ -206,13 +217,13 @@
           :rules="delRelationDilog.rules"
           size="mini"
         >
-          <el-form-item label="实体source:" prop="ent1" >
+          <el-form-item label="实体source:"  >
             <el-input v-model="delRelationDilog.form.ent1" autocomplete="off" ></el-input>
           </el-form-item>
-           <el-form-item label="实体target:" prop="ent2">
+           <el-form-item label="实体target:" >
             <el-input v-model="delRelationDilog.form.ent2" autocomplete="off"></el-input>
           </el-form-item>
-           <el-form-item label="关系:"  prop="rel">
+           <el-form-item label="关系:"  >
             <el-input v-model="delRelationDilog.form.rel" autocomplete="off"></el-input>
           </el-form-item>
           <!-- <el-form-item label="文件路径:" prop="file_path" >
@@ -235,6 +246,8 @@
 export default {
   data() {
     return {
+      echLoading:false,
+      jsonLoading:false, //json数据loading
       echDataJson: [], //echarts的data数据，需要接口处理
       linksJson: [], //关系links数据修改
       verD: [{ d: 'v2' }, { d: 'v1' }], //版本号
@@ -378,10 +391,17 @@ if(valid){
       url:'/hehe/add_entity',
       params:this.addEntDilog.form
     })
-    console.log(data,'新增成功');
+    //这里需要判断后台返回的是不是fail，如果是就拦截
+    if(data=='fail'){
+this.addEntDilog.visible = false
+this.$message.error('添加的实体已存在')
+    }else{
+console.log(data,'新增成功');
     this.addEntDilog.visible = false
     this.getJson()
     this.$message.success('新增实体成功')
+    }
+    
   } catch (error) {
     console.log(error,'新增失败');
     this.addEntDilog.visible = false
@@ -402,10 +422,16 @@ if(valid){
       url:'/hehe/update_entity',
       params:this.editEntDilog.form
     })
-    console.log(data,'修改成功');
+    if(data=='fail'){
+      this.editEntDilog.visible = false
+    this.$message.error('原实体不存在')
+    }else{
+console.log(data,'修改成功');
     this.getJson()
     this.editEntDilog.visible = false
     this.$message.success('修改实体成功')
+    }
+    
   } catch (error) {
     console.log(error,'修改失败');
     this.editEntDilog.visible = false
@@ -429,6 +455,7 @@ if(valid){
     console.log(data,'删除成功');
     this.getJson()
     this.delEntDilog.visible = false
+    this.$message.success('删除实体成功')
   } catch (error) {
     console.log(error,'删除失败');
     this.delEntDilog.visible = false
@@ -449,10 +476,18 @@ if(valid){
       url:'/hehe/add_relation',
       params:this.addRelationDilog.form
     })
-    console.log(data,'新增成功');
+    //判断后台给的数据，进行拦截
+    if(data=='fail'){
+    this.addRelationDilog.visible = false
+    this.$message.error('ent1、ent2不存在或新增的关系已存在')
+    }else{
+console.log(data,'新增成功');
     this.getJson()
     this.addRelationDilog.visible = false
     this.$message.success('新增关系成功')
+    }
+
+    
   } catch (error) {
     console.log(error,'新增失败');
     this.addRelationDilog.visible = false
@@ -474,10 +509,16 @@ if(valid){
       url:'/hehe/update_relation',
       params:this.editRelationDilog.form
     })
-    console.log(data,'修改成功');
+    if(data=='fail'){
+      this.editRelationDilog.visible = false
+    this.$message.error('原关系三元组不存在')
+    }else{
+console.log(data,'修改成功');
     this.getJson()
     this.editRelationDilog.visible = false
     this.$message.success('修改关系成功')
+    }
+    
   } catch (error) {
     console.log(error,'修改失败');
     this.editRelationDilog.visible = false
@@ -490,10 +531,10 @@ if(valid){
 })
    },
    //删除关系
-   handeldelrelation(){
-this.$refs.delRelationForm.validate(async(valid)=>{
-if(valid){
-  try {
+   async handeldelrelation(){
+     var valid=this.delRelationDilog.form.ent1 || this.delRelationDilog.form.ent2 || this.delRelationDilog.form.rel
+     if(valid){
+try {
     const {data}=await this.$ajax({
       url:'/hehe/delete_relation',
       params:this.delRelationDilog.form
@@ -501,19 +542,38 @@ if(valid){
     console.log(data,'删除成功');
     this.getJson()
     this.delRelationDilog.visible = false
+    this.$message.success('删除成功')
   } catch (error) {
     console.log(error,'删除失败');
     this.delRelationDilog.visible = false
   }
-}else{
-   console.log('error submit!!');
-              this.delRelationDilog.visible = false
-            return false;
-}
-})
+     }else{
+      this.$message.warning('请输入实体或关系')
+     }
+// this.$refs.delRelationForm.validate(async(valid)=>{
+// if(valid){
+//   try {
+//     const {data}=await this.$ajax({
+//       url:'/hehe/delete_relation',
+//       params:this.delRelationDilog.form
+//     })
+//     console.log(data,'删除成功');
+//     this.getJson()
+//     this.delRelationDilog.visible = false
+//   } catch (error) {
+//     console.log(error,'删除失败');
+//     this.delRelationDilog.visible = false
+//   }
+// }else{
+//    console.log('error submit!!');
+//               this.delRelationDilog.visible = false
+//             return false;
+// }
+// })
    },
     //获取json文件、
     async getJson(d) {
+      this.jsonLoading=true
      this.echDataJson = []
     this.linksJson = []
 
@@ -654,8 +714,13 @@ this.echDataJson.push(...typeList)
           console.log(this.linksJson, 'lllllllllllllllllllllllaaaaaaaaaaaaaaaaaaaaaaaaa')
 
           this.echat()
+          setTimeout(() => {
+            this.jsonLoading=false
+          }, 300);
+          
         }
       } catch (error) {
+        this.jsonLoading=false
         console.log(error, '获取信息错误')
       }
     },
@@ -693,6 +758,7 @@ this.echDataJson.push(...typeList)
       btn.textContent = JSON.stringify(dataHtml, null, '')
     },
     echat() {
+      this.echLoading=true
       // 基于准备好的dom，初始化echarts实例
       var myChart = this.$echarts.init(document.getElementById('main'))
       //获取后台数据的处理赋值
@@ -876,6 +942,10 @@ this.echDataJson.push(...typeList)
 
       // 使用刚指定的配置项和数据显示图表。
       myChart.setOption(option)
+      setTimeout(() => {
+        this.echLoading=false
+      }, 300);
+      
     }
   },
   mounted() {
@@ -906,12 +976,17 @@ this.echDataJson.push(...typeList)
   }
   .modelM {
     display: flex;
+    .cardddd{
+      margin: 24px 5px;
+      background-color: #F6F6F6;
+      box-shadow:none;
+    }
     .version {
       .active {
         background-color: rgb(0, 162, 255);
         color: white;
       }
-      width: 165px;
+      // width: 165px;
 
       font-size: 18px;
       font-weight: 600;
@@ -939,15 +1014,15 @@ this.echDataJson.push(...typeList)
     .json {
       font-size: 18px;
       font-weight: 600;
-      flex: 1;
-      width: 200px;
-      margin-right: 20px;
+      // flex: 1;
+      // width: 200px;
+      // margin-right: 20px;
       .jsonBorder {
         height: 520px;
         margin-top: 20px;
         font-size: 14px;
-        border: 2px solid #ccc;
-        padding: 20px;
+        // border: 2px solid #ccc;
+        // padding: 10px;
         border-radius: 4px;
         overflow-y: auto;
       }
