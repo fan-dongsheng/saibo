@@ -2,7 +2,7 @@
   <div class="extract">
     <el-button
       type="primary"
-      size="medium"
+      size="small"
       style="margin:24px;margin-bottom:0"
       @click="$router.back()"
     >上一步</el-button>
@@ -80,7 +80,7 @@
             v-for="(item,index) in markList"
             :key="index"
             v-html="item.text"
-            @mouseup="getWord"
+            @mouseup="getWord(item,index)"
           ></div>
           <!-- <div class="cont-mak">
             中国第一款陆基超音速巡航导弹长剑-100
@@ -89,10 +89,26 @@
         </el-card>
         <!-- //右侧的列表展示 -->
         <el-card class="list">
+          <!-- //右侧添加类别按钮 -->
+          <!-- <div class="list-input">
+                <el-input
+                class="input-new-tag"
+                v-if="inputVisible"
+                v-model="inputValue"
+                ref="saveTagInput"
+                size="small"
+                @keyup.enter.native="handleInputConfirm"
+                @blur="handleInputConfirm"
+              >
+              </el-input>
+              <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+          </div> -->
           <div class="list-cont" v-for="(item,index) in listMark" :key="index">
-            <div class="a" v-for="(val,key,i) in item" :key="i" :style="`background-color:${val}`">
+            <div class="a" v-for="(val,key,i) in item" :key="i" :style="`background-color:${val}`"
+            @click="activeLis(item,index,val,key,i)">
               {{key}}
               <!-- <i class="el-icon-close" @click="delLis(item,index,val,key,i)"></i> -->
+              <i class="el-icon-aim" v-if="i==activeMark" ></i>
             </div>
           </div>
         </el-card>
@@ -105,6 +121,9 @@
 export default {
   data() {
     return {
+      activeMark:false, //右侧标注选中
+      inputValue:'',
+      inputVisible:false, //标注input显示
       marLoading: false, //标记loading
       EartLoading: false, //实体loading
       //标注文件
@@ -136,6 +155,92 @@ export default {
     }
   },
   methods: {
+    //点击选中标注右侧数组组
+    activeLis(item,index,val,key,i){
+      this.activeMark=i
+    },
+    //标注颜色的改变
+    rgb(){
+var markList=this.markList
+var bgColor=['#06FDBC', '#F6FE05', '#07B0FE', '#FDB408', '#00DB1C']
+ var bgRight = {} 
+ this.listMark=[]
+markList.forEach((item,index)=>{
+  
+
+  //需要遍历每个对象
+  for (const key in item) {
+    // console.log(key,':',item[key]);
+    if(key=='国家'){
+        //右侧导航栏颜色加文字
+        bgRight[key]=bgColor[0] 
+      var newBgcolor=bgColor[0]  
+      item[key].forEach((ele,i)=>{
+        var text = item.text
+          if (text.indexOf(ele) >= 0) {
+            // if (typeof bgNew[searchText] == 'undefined') {
+            //   bgNew[searchText] = this.backGr()
+            // }
+            // var bgColor = bgNew[searchText]
+            var text = text.replace(ele, `<span style=background-color:${newBgcolor};>` + ele + '</span>')
+            // console.log(text,'111111111111111111111111');
+            markList[index].text=text
+          }
+      })
+      // markList[index].text=text
+      
+    }
+    if(key=='武器'){
+      //右侧导航栏颜色加文字
+        bgRight[key]=bgColor[1] 
+      var newBgcolor=bgColor[1]
+      item[key].forEach((ele,i)=>{
+        var text = item.text
+          if (text.indexOf(ele) >= 0) {
+            // if (typeof bgNew[searchText] == 'undefined') {
+            //   bgNew[searchText] = this.backGr()
+            // }
+            // var bgColor = bgNew[searchText]
+            var text = text.replace(ele, `<span style=background-color:${newBgcolor};>` + ele + '</span>')
+            // console.log(text,'2222222222222');
+            markList[index].text=text
+          }
+      })
+    }
+    if(key=='装备'){
+      //右侧导航栏颜色加文字
+        bgRight[key]=bgColor[2] 
+      var newBgcolor=bgColor[2]
+      item[key].forEach((ele,i)=>{
+        var text = item.text
+          if (text.indexOf(ele) >= 0) {
+            // if (typeof bgNew[searchText] == 'undefined') {
+            //   bgNew[searchText] = this.backGr()
+            // }
+            // var bgColor = bgNew[searchText]
+            var text = text.replace(ele, `<span style=background-color:${newBgcolor};>` + ele + '</span>')
+            // console.log(text,'33333333333333');
+            markList[index].text=text
+          }
+      })
+    }
+  }
+})
+this.listMark.push(bgRight)
+
+
+    },
+    //标注右侧的input改变
+    handleInputConfirm(){
+        this.inputVisible = false;
+        this.inputValue = '';
+    },
+     showInput() {
+        this.inputVisible = true;
+        this.$nextTick(_ => {
+          this.$refs.saveTagInput.$refs.input.focus();
+        });
+      },
     //标注结果
     async markResult() {
       if(this.$route.params.extract=='标记'){
@@ -150,10 +255,12 @@ this.marLoading = true
         this.marLoading = false
         console.log(data, '标注结果')
         this.markList = data
-        this.regs()
+       
+        // this.regs()
+        this.rgb()
       } catch (error) {
         this.marLoading = false
-        // this.$message.error('获取标注失败')
+        this.$message.error('获取标注失败')
       }
       }
       
@@ -178,7 +285,7 @@ this.marLoading = true
   this.teamListAll=data.map((item,index)=>{
           return item.map((ele,i)=>{
               return {
-                name:`entity${i}`,
+                name:ele.substring( ele.lastIndexOf('/')+1,ele.lastIndexOf('.'))  ,
                 fie:ele
               }
           })
@@ -198,7 +305,7 @@ this.EartLoading = false
         })
         console.log(data, '实体结果')
         this.teamList = data
-        this.regs()
+        // this.regs()
         this.$message.success('抽取成功')
         this.EartLoading = false
         }
@@ -215,16 +322,51 @@ this.EartLoading = false
     }
     },
     //滑动取词
-    getWord() {
+    getWord(item,index) {
       let txt = window.getSelection ? window.getSelection() : document.selection.createRange().text
       txt = txt + ''
       txt = txt.replace(/^\s+|\s+$/g, '')
       if (txt.length > 0) {
         console.log(txt)
-        this.regs(txt)
+        console.log(item,';',index);
+        
+        // this.regs(txt)
         // var bgColor = this.backGr() //右侧card数组的添加文字背景色
+        //判断选择的list是哪个，然后标注颜色
+        var bgColor=['#06FDBC', '#F6FE05', '#07B0FE', '#FDB408', '#00DB1C']
+        if(this.activeMark==0){
+          
+        var text = item.text
+        var newBgcolor=bgColor[0] 
+          if (text.indexOf(txt) >= 0) {
 
-        // this.listMark.push(`<span style=background-color:${bgColor};>` + txt + '</span>')
+            var text = text.replace(txt, `<span style=background-color:${newBgcolor};>` + txt + '</span>')
+            // console.log(text,'2222222222222');
+            this.markList[index].text=text
+          }
+      
+        }else if(this.activeMark==1){
+var text = item.text
+        var newBgcolor=bgColor[1] 
+          if (text.indexOf(txt) >= 0) {
+
+            var text = text.replace(txt, `<span style=background-color:${newBgcolor};>` + txt + '</span>')
+            // console.log(text,'2222222222222');
+            this.markList[index].text=text
+          }
+        }else if(this.activeMark==2){
+var text = item.text
+        var newBgcolor=bgColor[2] 
+          if (text.indexOf(txt) >= 0) {
+
+            var text = text.replace(txt, `<span style=background-color:${newBgcolor};>` + txt + '</span>')
+            // console.log(text,'2222222222222');
+            this.markList[index].text=text
+          }
+        }
+        
+
+        
       }
     },
     //颜色随机数
@@ -240,6 +382,7 @@ this.EartLoading = false
     regs(word) {
       var mark = this.markList
       var bgNew = {} //新数组,
+      this.listMark=[]
       mark.forEach((item, index) => {
         // console.log(item, '111111111111111')
 
@@ -318,8 +461,8 @@ this.EartLoading = false
     }
   },
   created() {
-    this.regs()
-    console.log(this.$route)
+    // this.regs()
+    // console.log(this.$route)
     this.exrtResult() //抽取
     this.markResult() //标记
   }
@@ -362,7 +505,7 @@ this.EartLoading = false
         position: relative;
         .text {
           color: #fff;
-          font-size: 26px;
+          font-size: 16px;
           font-weight: 400;
         }
         .line {
@@ -423,8 +566,24 @@ this.EartLoading = false
       .list {
         margin-left: 200px;
         width: 400px;
+        .list-input{
+          margin-bottom: 10px;
+        }
+        .button-new-tag {
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .input-new-tag {
+    width: 90px;
+    margin-left: 10px;
+    vertical-align: bottom;
+  }
         .list-cont {
           .a {
+            cursor: pointer;
           }
           .el-icon-close {
             margin-left: 30px;

@@ -26,7 +26,9 @@
 
         <el-table-column label="本体图">
           <template slot-scope="scope" class>
-            <el-button size="mini" type="text">{{scope.row.modelPath}}</el-button>
+            <el-button size="mini" type="text"
+            @click="pushModel(scope.$index, scope.row)"
+            >{{scope.row.modelPath}}</el-button>
           </template>
         </el-table-column>
         <!-- <el-table-column prop="atlas" label="图谱"></el-table-column> -->
@@ -221,6 +223,10 @@ export default {
     cellstyle({row, column, rowIndex, columnIndex}){
 return 'text-align:center;height:46px;line-height:46px;padding:0;border-right: 1px solid #DBE8FB;border-bottom: 1px solid #DBE8FB;'
 
+    },
+    //
+    pushModel(){
+this.$router.push('dataImport')
     },
     //点击文件名跳转详情页
     pushDetail(index, row) {
