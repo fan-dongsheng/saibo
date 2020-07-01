@@ -5,7 +5,6 @@
         <el-button type="primary" class="add" size="small" @click="showAddfolderDialog">新建项目</el-button>
       </div>
       <el-table
-      
         border
         :data="tableProject"
         style="width: 100%"
@@ -26,24 +25,28 @@
 
         <el-table-column label="本体图">
           <template slot-scope="scope" class>
-            <el-button size="mini" type="text"
-            @click="pushModel(scope.$index, scope.row)"
+            <el-button
+              size="mini"
+              type="text"
+              @click="pushModel(scope.$index, scope.row)"
             >{{scope.row.modelPath}}</el-button>
           </template>
         </el-table-column>
         <!-- <el-table-column prop="atlas" label="图谱"></el-table-column> -->
-        <el-table-column prop="description" label="备注"></el-table-column>
+        <el-table-column label="数据类型">
+          <template slot-scope="scope">{{ scope.row.dataType=='s' ?'结构化': '非结构化' }}</template>
+        </el-table-column>
+        <el-table-column prop="date" label="时间"></el-table-column>
+        <el-table-column prop="description" label="描述"></el-table-column>
         <el-table-column label="操作">
-          <template slot-scope="scope" >
+          <template slot-scope="scope">
             <div class="imgs">
-              <span class="imgs-a"  @click="handleEdit(scope.$index, scope.row)"></span>
-              <span class="imgs-b"  @click="handleDelete(scope.$index, scope.row)"></span>
-           
+              <span class="imgs-a" @click="handleEdit(scope.$index, scope.row)"></span>
+              <span class="imgs-b" @click="handleDelete(scope.$index, scope.row)"></span>
             </div>
-           
-            
+
             <!-- <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini" type="text" @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
+            <el-button size="mini" type="text" @click="handleDelete(scope.$index, scope.row)">删除</el-button>-->
             <!-- <el-button size="mini" type="text" @click="handleDown(scope.$index, scope.row)">导出</el-button> -->
           </template>
         </el-table-column>
@@ -72,11 +75,44 @@
           <el-form-item label="项目名称:" prop="name">
             <el-input v-model="addfolderDialog.form.name" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="数据集存储地址:" prop="dataPath">
+          <el-form-item label="数据选择:">
+            <el-select
+              v-model="value"
+              value-key="label"
+              clearable
+              placeholder="请选择"
+              @change="handelData"
+            >
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="数据集存储地址:" prop="dataPath" v-if="value.value=='op'">
             <el-input v-model="addfolderDialog.form.dataPath" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="模型存储地址:" prop="modelPath">
-            <el-input v-model="addfolderDialog.form.modelPath" autocomplete="off"></el-input>
+          <el-form-item label="模型选择:">
+            <el-select v-model="value1" clearable placeholder="请选择" @change="handelModel">
+              <el-option
+                v-for="item in options1"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="数据类型:">
+            <el-select v-model="value2" clearable placeholder="请选择">
+              <el-option
+                v-for="item in options2"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="描述:">
             <el-input v-model="addfolderDialog.form.description" autocomplete="off"></el-input>
@@ -157,6 +193,21 @@ export default {
    */
   data() {
     return {
+      options: [],
+      options1: [],
+      options2: [
+        {
+          value: 's',
+          label: '结构化'
+        },
+        {
+          value: 'un',
+          label: '非结构化'
+        }
+      ],
+      value: {},
+      value1: '',
+      value2: '',
       id: '',
       imgDataUrl: '',
       dataParams: {}, //上传文件file参数
@@ -219,14 +270,68 @@ export default {
   },
 
   methods: {
-    //表格属性
-    cellstyle({row, column, rowIndex, columnIndex}){
-return 'text-align:center;height:46px;line-height:46px;padding:0;border-right: 1px solid #DBE8FB;border-bottom: 1px solid #DBE8FB;'
+    handelModel(valued) {
+      console.log(valued)
+      console.log(this.value1, '===========================')
+    },
+    //handelData数据选择请求接口
+    async handelData(valueCh) {
+      console.log(this.value, '++++++++++++++')
 
+      this.options1 = []
+      //请求模型接口
+      const { data } = await this.$ajax({
+        url: '/hehe/fm_selectJson',
+        params: {
+          datasetname: valueCh.label
+        }
+      })
+      var obj = JSON.parse(data)
+      //   this.options1.concat(obj)
+      // console.log(this.options1,'拼接数组');
+      for (var key in obj) {
+        // console.log(key,);
+
+        this.options1.push({
+          value: obj[key],
+          label: key
+        })
+      }
+    },
+
+    //下拉菜单
+    async getSelectData() {
+      const { data } = await this.$ajax({
+        url: '/hehe/fm_selectData'
+      })
+      console.log(data, '项目管理下拉菜单获取')
+
+      for (var key in data) {
+        console.log(key, ':', data[key])
+        this.options.push({
+          value: data[key],
+          label: key
+        })
+
+        // this.options=a.map(()=>{
+        //   return{
+        //     value:data[key],
+        //     label:key
+        //   }
+        // })
+      }
+      this.options.push({
+        value: 'op',
+        label: '自定义'
+      })
+    },
+    //表格属性
+    cellstyle({ row, column, rowIndex, columnIndex }) {
+      return 'text-align:center;height:46px;line-height:46px;padding:0;border-right: 1px solid #DBE8FB;border-bottom: 1px solid #DBE8FB;'
     },
     //
-    pushModel(){
-this.$router.push('dataImport')
+    pushModel() {
+      this.$router.push('dataImport')
     },
     //点击文件名跳转详情页
     pushDetail(index, row) {
@@ -244,7 +349,9 @@ this.$router.push('dataImport')
           return {
             name: item[0],
             dataPath: item[1],
-            modelPath: item[2]
+            modelPath: item[2],
+            dataType: item[3],
+            date:item[4]
           }
         })
         this.tableLoading = false
@@ -349,7 +456,7 @@ this.$router.push('dataImport')
     handleDown(index, row) {
       console.log(index, row)
     },
-    //新增项目
+    //新增项目,保存按钮
     async handelAddfolder() {
       this.$refs.addfolderForm.validate(async valid => {
         if (valid) {
@@ -365,9 +472,15 @@ this.$router.push('dataImport')
             console.log(this.addfolderDialog, 'jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjklllkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk')
 
             const res = await this.$ajax({
-              url: `/hehe/pm_addProject?name=${this.addfolderDialog.form.name}&datapath=${this.addfolderDialog.form.dataPath}&modelpath=${this.addfolderDialog.form.modelPath}`
+              url: `/hehe/pm_addProject?name=${this.addfolderDialog.form.name}&datapath=${this.value.value}&modelpath=${this.value1}&datatype=${this.value2}&remark=${this.addfolderDialog.form.description}`
             })
             console.log(res, 'add')
+            if (res.data != 'True') {
+              this.$message.error('保存失败')
+              this.addfolderDialog.visible = false
+              this.addfolderDialog.loading = false
+              return
+            }
             this.$message.success('保存成功')
             this.addfolderDialog.visible = false
             this.addfolderDialog.loading = false
@@ -399,6 +512,7 @@ this.$router.push('dataImport')
   },
   created() {
     this.getProjectList()
+    this.getSelectData()
   }
 }
 </script>
@@ -408,27 +522,27 @@ this.$router.push('dataImport')
   height: 100%;
   position: relative;
   border: 1px solid rgb(242, 243, 244);
-  .imgs{
+  .imgs {
     display: flex;
     align-items: center;
     justify-content: center;
-    
-    .imgs-a{
+
+    .imgs-a {
       display: inline-block;
       background: url(../../assets/indexNew/edit.png) no-repeat;
       background-size: cover;
       width: 21px;
-    height: 21px;
-    cursor: pointer;
+      height: 21px;
+      cursor: pointer;
     }
-    .imgs-b{
-  margin-left: 10px;
+    .imgs-b {
+      margin-left: 10px;
       display: inline-block;
       background: url(../../assets/indexNew/del.png) no-repeat;
       background-size: cover;
       width: 21px;
-    height: 22px;
-    cursor: pointer;
+      height: 22px;
+      cursor: pointer;
     }
   }
   .add {

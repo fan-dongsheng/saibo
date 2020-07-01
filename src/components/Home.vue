@@ -1,14 +1,15 @@
 <template>
   <el-container class="home-container">
     <el-header style="height:60px;">
-      <div class="img-home-logo" @click="$router.push('./')">
+      <div class="img-home-logo" @click="$router.push({path:'/'})">
         <!-- <img src="../assets/logo.png" class="img-home-logo" alt /> -->
         
       </div>
-    <span  @click="$router.push('./')" style="font-size:20px;color:rgba(255,255,255,1);margin-left:20px;
+    <span  @click="$router.push({path:'/'})" style="font-size:20px;color:rgba(255,255,255,1);margin-left:20px;
 text-shadow:-6.123234262925839e-17px 1px 1px rgba(70,70,70,0.31);cursor: pointer;">航天赛博</span>
     </el-header>
     <el-container>
+     
       <el-aside width="180px">
         <!-- 侧边栏菜单区域 -->
         <el-menu
@@ -38,8 +39,10 @@ text-shadow:-6.123234262925839e-17px 1px 1px rgba(70,70,70,0.31);cursor: pointer
         <!-- <div style="width:100%;height:100%;background:rgba(229,240,255,1)">
 
         </div> -->
-       
-        <!-- <div class="imglog"></div> -->
+       <div class="flexImg" v-show="$route.path=='/'">
+            <div class="imglog"></div>
+       </div>
+        
         
         
       </el-main>
@@ -120,6 +123,7 @@ export default {
     // }
   },
   created(){
+    
     this.menuLoading=true
     window.setTimeout(() => {
       this.menuLoading=false
@@ -129,10 +133,18 @@ export default {
 }
 </script>
 <style lang="less">
-.imglog{
-  background: url('../images/logo.png') no-repeat;
+.flexImg{
   width: 100%;
-  height: 400px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.imglog{
+  background: url('../assets/home.png') no-repeat;
+  width: 830px;
+    height: 441px;
+    background-size: cover;
 }
 .el-menu-item.is-active {
   background-color: #c1defc !important;
