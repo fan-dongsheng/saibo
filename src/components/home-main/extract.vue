@@ -9,7 +9,7 @@
     <div class="left" v-if="$route.params.extract==='抽取'">
       <el-card class="crd" v-loading="EartLoading">
         <div slot="header" class="clearfix">
-          <div class="title">实体生成</div>
+          <div class="title">实体生成数据集：{{entDataPath}}_csv</div>
         </div>
         <div class="card1">
           <div class="bus" v-if="teamListAll.length==0">
@@ -57,14 +57,34 @@
           <div class="title">关系生成</div>
         </div>
         <div class="card1">
-          <div class="bus">
+          <div class="bus"  >
+            <el-popover
+              class="box"
+             width="200"
+              v-for="(item,index) in figureList"
+              :key="index"
+              placement="top-start"
+              title="路径"
+              trigger="hover"
+              :content="item.fie"
+              
+            >
+              <div slot="reference"  style="padding-top: 21px;
+        padding-left: 30px;" @click="downRelation(item.fie)">
+                <div class="text">{{ item.name }}</div>
+                <div class="line"></div>
+                <div class="icon"></div>
+              </div>
+            </el-popover>
+          </div>
+          <!-- <div class="bus">
             <div class="box" style="padding-top: 21px;
         padding-left: 30px;" v-for="item in figureList" :key="item.id">
               <div class="text">{{ item.name }}</div>
               <div class="line"></div>
               <div class="icon"></div>
             </div>
-          </div>
+          </div> -->
           
         </div>
       </el-card>
@@ -121,6 +141,7 @@
 export default {
   data() {
     return {
+      entDataPath:this.$route.query.dataPath,
       activeMark:false, //右侧标注选中
       inputValue:'',
       inputVisible:false, //标注input显示
@@ -139,22 +160,37 @@ export default {
       ],
       teamList: [],//抽取结果
       teamListAll:[], //批量抽取展示
-      figureList: [
-        {
-          name: 'a.json'
-        },
-        {
-          name: 'a.json'
-        },
-        {
-          name: 'a.json'
-        }
-      ],
+      figureList: [], //关系抽取
       //标注右侧的数组队列
       listMark: []
     }
   },
   methods: {
+    //标注右侧列表
+    async markRight(){
+      const {data}=await this.$ajax({
+        url:`/hehe/markkeys?dataset=quality_test`
+      })
+      console.log(data,'获取右侧数组');
+      // var dataRt= Object.assign({},data)
+      // console.log(dataRt);
+      var bgColor=['#06FDBC', '#07B0FE', '#F6FE05','#FDB408', '#00DB1C']
+      var dataRt=data.map((item,index)=>{
+        
+        return{
+          item :bgColor[index]
+        }
+      })
+     
+     
+     
+      
+      
+    },
+    //downRelation下载关系
+    downRelation(file){
+      window.open(`/hehe/csvDownload?path=${file}`)
+    },
     //点击选中标注右侧数组组
     activeLis(item,index,val,key,i){
       this.activeMark=i
@@ -162,71 +198,102 @@ export default {
     //标注颜色的改变
     rgb(){
 var markList=this.markList
-var bgColor=['#06FDBC', '#F6FE05', '#07B0FE', '#FDB408', '#00DB1C']
- var bgRight = {} 
+var bgColor={"型号":"#F6FE05","模块":"#06FDBC"}
+// var bgColor=['#06FDBC', '#F6FE05', '#07B0FE', '#FDB408', '#00DB1C']
+//  var bgRight = {} 
  this.listMark=[]
+ var newTxt=''
 markList.forEach((item,index)=>{
+          for (const key in item) {
+
+      for (const bg in bgColor) {
+      //  console.log(bg,':',item[key]);
+
+       if(bg===item[key]){
+
+         
+         //在文字中找key，key是高亮字段
+          var text =newTxt?newTxt:item["sentence"]
+          // console.log(text,'================================');
+          
+          if(text.indexOf(key)>=0){
+              var text = text.replace(key, `<span style=background-color:${bgColor[bg]};>` + key + '</span>')
+              newTxt=text
+              console.log(text,'111111111111111111111111');
+             
+              markList[index].text=newTxt
+              
+          }
+       }
+      }
+
+    }
+})
+
+
+
+// markList.forEach((item,index)=>{
   
 
-  //需要遍历每个对象
-  for (const key in item) {
-    // console.log(key,':',item[key]);
-    if(key=='国家'){
-        //右侧导航栏颜色加文字
-        bgRight[key]=bgColor[0] 
-      var newBgcolor=bgColor[0]  
-      item[key].forEach((ele,i)=>{
-        var text = item.text
-          if (text.indexOf(ele) >= 0) {
-            // if (typeof bgNew[searchText] == 'undefined') {
-            //   bgNew[searchText] = this.backGr()
-            // }
-            // var bgColor = bgNew[searchText]
-            var text = text.replace(ele, `<span style=background-color:${newBgcolor};>` + ele + '</span>')
-            // console.log(text,'111111111111111111111111');
-            markList[index].text=text
-          }
-      })
-      // markList[index].text=text
+//   //需要遍历每个对象
+//   for (const key in item) {
+//     // console.log(key,':',item[key]);
+//     if(key=='国家'){
+//         //右侧导航栏颜色加文字
+//         bgRight[key]=bgColor[0] 
+//       var newBgcolor=bgColor[0]  
+//       item[key].forEach((ele,i)=>{
+//         var text = item.text
+//           if (text.indexOf(ele) >= 0) {
+//             // if (typeof bgNew[searchText] == 'undefined') {
+//             //   bgNew[searchText] = this.backGr()
+//             // }
+//             // var bgColor = bgNew[searchText]
+//             var text = text.replace(ele, `<span style=background-color:${newBgcolor};>` + ele + '</span>')
+//             // console.log(text,'111111111111111111111111');
+//             markList[index].text=text
+//           }
+//       })
+//       // markList[index].text=text
       
-    }
-    if(key=='武器'){
-      //右侧导航栏颜色加文字
-        bgRight[key]=bgColor[1] 
-      var newBgcolor=bgColor[1]
-      item[key].forEach((ele,i)=>{
-        var text = item.text
-          if (text.indexOf(ele) >= 0) {
-            // if (typeof bgNew[searchText] == 'undefined') {
-            //   bgNew[searchText] = this.backGr()
-            // }
-            // var bgColor = bgNew[searchText]
-            var text = text.replace(ele, `<span style=background-color:${newBgcolor};>` + ele + '</span>')
-            // console.log(text,'2222222222222');
-            markList[index].text=text
-          }
-      })
-    }
-    if(key=='装备'){
-      //右侧导航栏颜色加文字
-        bgRight[key]=bgColor[2] 
-      var newBgcolor=bgColor[2]
-      item[key].forEach((ele,i)=>{
-        var text = item.text
-          if (text.indexOf(ele) >= 0) {
-            // if (typeof bgNew[searchText] == 'undefined') {
-            //   bgNew[searchText] = this.backGr()
-            // }
-            // var bgColor = bgNew[searchText]
-            var text = text.replace(ele, `<span style=background-color:${newBgcolor};>` + ele + '</span>')
-            // console.log(text,'33333333333333');
-            markList[index].text=text
-          }
-      })
-    }
-  }
-})
-this.listMark.push(bgRight)
+//     }
+//     if(key=='武器'){
+//       //右侧导航栏颜色加文字
+//         bgRight[key]=bgColor[1] 
+//       var newBgcolor=bgColor[1]
+//       item[key].forEach((ele,i)=>{
+//         var text = item.text
+//           if (text.indexOf(ele) >= 0) {
+//             // if (typeof bgNew[searchText] == 'undefined') {
+//             //   bgNew[searchText] = this.backGr()
+//             // }
+//             // var bgColor = bgNew[searchText]
+//             var text = text.replace(ele, `<span style=background-color:${newBgcolor};>` + ele + '</span>')
+//             // console.log(text,'2222222222222');
+//             markList[index].text=text
+//           }
+//       })
+//     }
+//     if(key=='装备'){
+//       //右侧导航栏颜色加文字
+//         bgRight[key]=bgColor[2] 
+//       var newBgcolor=bgColor[2]
+//       item[key].forEach((ele,i)=>{
+//         var text = item.text
+//           if (text.indexOf(ele) >= 0) {
+//             // if (typeof bgNew[searchText] == 'undefined') {
+//             //   bgNew[searchText] = this.backGr()
+//             // }
+//             // var bgColor = bgNew[searchText]
+//             var text = text.replace(ele, `<span style=background-color:${newBgcolor};>` + ele + '</span>')
+//             // console.log(text,'33333333333333');
+//             markList[index].text=text
+//           }
+//       })
+//     }
+//   }
+// })
+// this.listMark.push(bgRight)
 
 
     },
@@ -245,11 +312,11 @@ this.listMark.push(bgRight)
     async markResult() {
       if(this.$route.params.extract=='标记'){
 this.marLoading = true
-      try {
+      
         const { data } = await this.$ajax({
-          url: '/hehe/fm_labelSave',
+          url: '/hehe/mark',
           params: {
-            filepath: `${this.$route.query.dataPath}/${this.$route.params.name}`
+            // path: `${this.$route.query.dataPath}/${this.$route.params.name}`
           }
         })
         this.marLoading = false
@@ -258,10 +325,7 @@ this.marLoading = true
        
         // this.regs()
         this.rgb()
-      } catch (error) {
-        this.marLoading = false
-        this.$message.error('获取标注失败')
-      }
+     
       }
       
     },
@@ -298,13 +362,34 @@ this.marLoading = true
 this.EartLoading = false
         }else{
           const { data } = await this.$ajax({
-          url: '/hehe/fm_extract',
+          url: '/hehe/ner',
           params: {
-            input_file: `${this.$route.query.dataPath}/${this.$route.params.name}`
+            filelist:this.$route.params.name,
+            modelpath:this.$route.query.dataPath,
+            dataset:this.$route.query.dataPath
+            // input_file: `${this.$route.query.dataPath}/${this.$route.params.name}`
           }
         })
         console.log(data, '实体结果')
-        this.teamList = data
+        //抽取关系
+        const res = await this.$ajax({
+          url: '/hehe/ext',
+          params: {
+            filelist:this.$route.params.name,
+            modelpath:this.$route.query.dataPath,
+         dataset:this.$route.query.dataPath
+          }
+        })
+        console.log(res,'关系');
+        for (const key in res.data) {
+          this.figureList.push({name:key,fie:res.data[key]})
+        }
+        
+
+
+
+
+        this.teamList = data  //抽取结果
         // this.regs()
         this.$message.success('抽取成功')
         this.EartLoading = false
@@ -462,9 +547,10 @@ var text = item.text
   },
   created() {
     // this.regs()
-    // console.log(this.$route)
+    
     this.exrtResult() //抽取
     this.markResult() //标记
+    this.markRight() //获取右侧数组标记
   }
 }
 </script>

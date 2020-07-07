@@ -156,22 +156,55 @@
           <el-form-item label="项目名称:" prop="name">
             <el-input v-model="editfolderDialog.form.name" autocomplete="off" disabled></el-input>
           </el-form-item>
-          <el-form-item label="数据集存储地址:" prop="dataPath">
+          <el-form-item label="数据选择:">
+            <el-select
+              v-model="value"
+              value-key="label"
+              clearable
+              placeholder="请选择"
+              @change="handelData"
+            >
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="数据集存储地址:" prop="dataPath" v-if="value.value=='op'">
+            <el-input v-model="addfolderDialog.form.dataPath" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="模型选择:">
+            <el-select v-model="value1" clearable placeholder="请选择" @change="handelModel">
+              <el-option
+                v-for="item in options1"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="数据类型:">
+            <el-select v-model="value2" clearable placeholder="请选择">
+              <el-option
+                v-for="item in options2"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="描述:">
+            <el-input v-model="editfolderDialog.form.description" autocomplete="off"></el-input>
+          </el-form-item>
+          <!-- <el-form-item label="数据集存储地址:" prop="dataPath">
             <el-input v-model="editfolderDialog.form.dataPath" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="模型存储地址:" prop="modelPath">
             <el-input v-model="editfolderDialog.form.modelPath" autocomplete="off"></el-input>
-          </el-form-item>
-          <!-- <el-form-item label="数据集存储地址:" >           
-            <el-upload class="upload"  action :http-request="dataUpload" :on-success="success">        
-          <el-button type="primary">点击上传</el-button>
-        </el-upload>         
-          </el-form-item>
-          <el-form-item label="模型存储地址:" >
-            <el-upload class="upload"  action :http-request="modelUpload">
-          <el-button type="primary">点击上传</el-button>
-        </el-upload>         
-          </el-form-item>-->
+          </el-form-item> -->
+         
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" type="primary" @click="handeleditfolder">保 存</el-button>
@@ -235,7 +268,8 @@ export default {
         form: {
           name: '', // 项目名称
           dataPath: '', //数据集成位置
-          modelPath: '' //模型存储位置
+          modelPath: '' ,//模型存储位置
+          description: '' //描述
         },
         rules: {
           name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
@@ -263,7 +297,7 @@ export default {
       count: '', // 总页数
       page: {
         total: 0, // 总条数
-        pageSize: 5, // 每页显示条数
+        pageSize: 10, // 每页显示条数
         currentPage: 1 // 当前页
       }
     }
@@ -330,22 +364,28 @@ export default {
       return 'text-align:center;height:46px;line-height:46px;padding:0;border-right: 1px solid #DBE8FB;border-bottom: 1px solid #DBE8FB;'
     },
     //
-    pushModel() {
-      this.$router.push('dataImport')
+    pushModel(index,row) {
+      
+      
+      this.$router.push({path:'modelManagement',query:{dataPath:row.dataPath,name:row.name}})
     },
     //点击文件名跳转详情页
     pushDetail(index, row) {
-      this.$router.push(`/dataManagement/${row.name}?dataPath=${row.dataPath}`)
+      this.$router.push(`/dataManagement/${row.name}?dataPath=${row.dataPath}&dataType=${row.dataType}`)
     },
     //获取list
     async getProjectList() {
       try {
         this.tableLoading = true
         const { data } = await this.$ajax({
-          url: '/hehe/pm_getProjectList'
+          url: '/hehe/pm_getProjectList',
+          params:{
+            page:this.page.currentPage,
+            num:this.page.pageSize
+          }
         })
         console.log(data, '获取list')
-        this.tableProject = data.map((item, i) => {
+        this.tableProject = data.data.map((item, i) => {
           return {
             name: item[0],
             dataPath: item[1],
@@ -356,7 +396,7 @@ export default {
         })
         this.tableLoading = false
         console.log(this.tableProject)
-        this.page.total = data.length
+        this.page.total = data.total
       } catch (error) {
         console.log(error, '获取数据失败')
         this.tableLoading = false
@@ -393,6 +433,9 @@ export default {
     //修改项目
     handleEdit(index, row) {
       console.log(row)
+     this.value={}
+      this.value1=''
+      this.value2=''
 
       this.editfolderDialog.visible = true
       this.editfolderDialog.form = row
@@ -403,12 +446,12 @@ export default {
         if (valid) {
           try {
             const res = await this.$ajax({
-              url: `/hehe/pm_modProject`,
-              params: {
-                name: this.editfolderDialog.form.name,
-                datapath: this.editfolderDialog.form.dataPath,
-                modelpath: this.editfolderDialog.form.modelPath
-              }
+              url: `/hehe/pm_addProject?name=${this.addfolderDialog.form.name}&datapath=${this.value.value}&modelpath=${this.value1}&datatype=${this.value2}&remark=${this.addfolderDialog.form.description}`,
+              // params: {
+              //   name: this.editfolderDialog.form.name,
+              //   datapath: this.editfolderDialog.form.dataPath,
+              //   modelpath: this.editfolderDialog.form.modelPath
+              // }
             })
 
             this.editfolderDialog.visible = false
@@ -507,6 +550,7 @@ export default {
       this.page.currentPage = newPage
       console.log(this.page.currentPage)
 
+this.getProjectList()
       //掉接口
     }
   },
@@ -547,6 +591,7 @@ export default {
   }
   .add {
     border-radius: 4px;
+    
   }
   /deep/ .el-card {
     border-radius: 2px;

@@ -3,9 +3,11 @@
     <el-card v-loading="daLoading">
       <div slot="header" class="clearfix">
     <div class="title">数据管理</div>
-    <el-button type="success" class="extrt" size="small" @click="allEart">批量抽取</el-button>
-    <el-button type="success" size="small" @click="allBank">批量入库</el-button>
+    <el-button type="success" v-if="$route.query.dataType!='s'" class="extrt" size="small" @click="allEart">批量抽取</el-button>
+    <el-button type="success" class="extrt" size="small" @click="allBank">批量入库</el-button>
     <el-button type="primary" size="small" style="margin-left:30px" @click="$router.back()">上一步</el-button>
+    
+    <el-tag color="#396fff" style="margin-left:500px;color:#fff;">项目名称：{{$route.params.name}}</el-tag>
   </div>  
       <el-table
       border
@@ -22,15 +24,17 @@
           <template slot-scope="scope">{{ scope.row.name }}</template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" ></el-table-column>
-        <el-table-column label="抽取" >
-          <template slot-scope="scope">{{ scope.row.extract | extract}}</template>
-        </el-table-column>
-        <el-table-column label="标记" >
-          <template slot-scope="scope">{{ scope.row.mark | mark}}</template>
-        </el-table-column>
-        <el-table-column label="入库" >
+        <el-table-column label="入库" v-if="$route.query.dataType=='s'">
           <template slot-scope="scope">{{ scope.row.bank | bank}}</template>
         </el-table-column>
+        <el-table-column label="抽取" v-else>
+          <template slot-scope="scope">{{ scope.row.extract | extract}}</template>
+        </el-table-column>
+        
+        <el-table-column label="标记" v-if="$route.query.dataType!='s'">
+          <template slot-scope="scope">{{ scope.row.mark | mark}}</template>
+        </el-table-column>
+        
         <!-- <el-table-column prop="extract" label="抽取" ></el-table-column> -->
         <!-- <el-table-column prop="mark" label="标记" ></el-table-column>
         <el-table-column prop="bank" label="入库" ></el-table-column> item.substring( 0,item.lastIndexOf('.'))  -->
@@ -43,6 +47,16 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- 分页 -->
+      <div class="pag">
+        <el-pagination
+          background
+          layout="prev, pager, next,jumper"
+          :current-page="page.currentPage"
+          :total="page.total"
+          @current-change="getCurrentPage"
+        ></el-pagination>
+      </div>
     </el-card>
 
   </div>
@@ -52,6 +66,12 @@
 export default {
   data() {
     return {
+      dataPath:this.$route.query.dataPath,  //数据集名称
+      page: {
+        total: 0, // 总条数
+        pageSize: 10, // 每页显示条数
+        currentPage: 1 // 当前页
+      },
       daLoading:false,
       markList: [
         { text: '中国第一款陆基超音速巡航导弹长剑-100', ta: '中国', tb: '剑-1' },
@@ -85,7 +105,9 @@ export default {
         //   bank: '未入库'
         // }
       ], //多选列表
-      multipleSelection: [] //多选结果
+      multipleSelection:[],//多选结果
+      mut:[]
+      // mut:window.localStorage.getItem('arr') ? localStorage.getItem('arr').split(',') : [] 
     }
   },
   filters:{
@@ -135,11 +157,25 @@ const {data} =await this.$ajax({
       }else{
  const {data} =await this.$ajax({
         url:'/hehe/into',
-        params:{csvdatapath:this.$route.query.dataPath,
+        params:{datasetname:this.dataPath,
+        filelist: 'relation.csv,entity.csv',
+        // filelist: this.multipleSelection.join(),
         modelpath:'/home/gnx/tmp/pycharm_project_180/data/model/pro1/v1.json'}
       })
       console.log('入库成功',data);
+      // var a=JSON.parse(data)
+      // console.log(a);
+      
+      if(data.error){
+        this.$message.error(data.error)
+        this.$router.push({path:'/dataImport',query:{result:data.result,model:data.model}})
+        return
+      }
+      
+     
+      
       this.$message.success('入库成功')
+       this.$router.push({path:'/dataImport',query:{result:data.result,model:data.model}})
       }
 
       
@@ -153,15 +189,27 @@ if(this.multipleSelection.length<=0){
   
 }
     },
+    // 请求当前页数;
+    getCurrentPage(newPage) {
+      this.page.currentPage = newPage
+       
+      console.log(this.page.currentPage)
+
+this.getFileList()
+      //掉接口
+    },
     //获取列表数据
     async getFileList(){
       try {
          this.daLoading=true
       const {data} =await this.$ajax({
         url:'/hehe/fm_getFileList',
-        params:{dirpath:this.$route.query.dataPath}
+        params:{dirpath:this.$route.query.dataPath,
+        page:this.page.currentPage,
+        num:this.page.pageSize
+        }
       })
-      this.tableData=data.map(item=>{
+      this.tableData=data.data.map(item=>{
         return{
           name:item[0],
           createTime:item[1],
@@ -171,6 +219,8 @@ if(this.multipleSelection.length<=0){
         }
       })
       console.log(data,'获取文件列表成功');
+      this.page.total = data.total
+      //  this.multipleSelection.concat(this.mut)  //赋值给本地数组
       setTimeout(() => {
         this.daLoading=false
       }, 300);
@@ -212,14 +262,22 @@ if(this.multipleSelection.length<=0){
 
     //表格多选
     handleSelectionChange(val) {
+        this.mut.push(...val)
      console.log(val);
+     console.log(this.mut);
      var a=[]
      a=val.map(item=>{
        return item.name
      })
      this.multipleSelection=a
+   
      console.log(a);
-     
+
+    //  var b=this.mut.concat(val)
+
+    // console.log(b,'==============');
+    
+    //   window.localStorage.setItem('arr',b)
       
     },
     //抽取
@@ -235,6 +293,22 @@ if(this.multipleSelection.length<=0){
   },
   created() {
     this.getFileList()
+  },
+  watch:{
+    // multipleSelection:function (val) {
+      
+    //   console.log(val,'监听1111111111');
+
+    // var b=this.mut.push(...val)
+
+    // console.log(b,'==============');
+    
+    //   window.localStorage.setItem('arr',this.mut)
+    //   console.log(this.multipleSelection,'111111111');
+    //   // console.log(window.localStorage.getItem('arr').split(','));
+    // //  this.multipleSelection=this.mut
+      
+    // }
   }
 }
 </script>
@@ -243,6 +317,22 @@ if(this.multipleSelection.length<=0){
 .dataManagement {
   border: 1px solid rgb(242, 243, 244);
   height: 100%;
+  .pag {
+    height: 65px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    .el-pagination {
+      margin-top: 24px;
+      .el-pager {
+        color: #606266;
+        font-weight: 500;
+      }
+      .el-pagination__total {
+        margin-right: 25px;
+      }
+    }
+  }
   .clearfix{
     display: flex;
     align-items: center;

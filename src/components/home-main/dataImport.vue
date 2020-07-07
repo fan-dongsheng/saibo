@@ -2,11 +2,11 @@
   <div class="dataImport">
     <el-card class="cardT">
       <div class="flex">
-<div class="left" >
-        <div class="title">详细数据</div>
-        <div class="ent">实体(个) : <span>{{imp['entityCount']}}</span></div>
-        <div class="relation">关系(个) : <span>{{imp['relationCount']}}</span></div>
-        <div class="center">中心节点(个) : <span>{{imp['entityCenter']}}</span></div>
+<div class="left"  >
+        <div class="title" v-for="(value,key,index) in imp" :key="index">{{key}}:{{value}}</div>
+        <!-- <div class="ent">实体数目(个) : <span>{{imp['entityCount']}}</span></div>
+        <div class="relation">关系类型(个) : <span>{{imp['relationCount']}}</span></div>
+        <div class="center">关系数目(个) : <span>{{imp['entityCenter']}}</span></div> -->
       </div>
       <div class="right">
          <div id="main" style="width: 600px;height:600px;"></div>
@@ -21,21 +21,150 @@
 export default {
   data(){
     return{
+      echDataJson:[],
+      linksJson:[],
 imp:{}
     }
   },
   mounted(){
-    this.dataImp() //数据导入
-    this.echat()
+    this.resulJson()
+   
+    
+this.resultData()
+   
+    
+    // this.dataImp() //数据导入
+    // this.echat()
   },
   methods:{
+    //解析传过来的json数据，展示each
+    resulJson(){
+      this.echDataJson = []
+    this.linksJson = []
+ var a= JSON.parse(this.$route.query.model) 
+ console.log(a,'111111111quan');
+ 
+ var ent=a.entity
+ var relation=a.relation
+ //实体
+ var typeList=[] 
+  for (const key in ent) {
+    console.log(key,":",ent[key]);
+    
+       if(JSON.stringify(ent[key]) == "[]"){
+this.echDataJson.push({ name: key })
+           }else{
+             //单位里面继续套的type需要解析出来
+             
+            //  var typeList=[]
+             
+             typeList.push(key)
+                ent[key].forEach((ele, inx) => {
+                  this.echDataJson.push({ name: ele })
+                })
+// for (const key1 in ent[key]) {
+//  console.log( key1,':', ent[key][key1], 'shitishishishiss============')
+// //遍历type的数组val值,再加到数组中
+//       for(const key2 in ent[key][key1]){
+//         console.log(key2,':', ent[key][key1][key2], ',,,,,,,,,,,,,,,,,,,,,,,,,,,');
+        
+//         typeList.push(ent[key][key1][key2])
+//       }
+
+// }
+
+
+           }
+    
+  }
+
+   var color = ['#06FDBC', '#0188FE', '#07B0FE', '#FDB408', '#00DB1C', '#0188FE']
+            this.echDataJson = this.echDataJson.map((el, i) => {
+              var normal = {}
+              return {
+                name: el.name,
+                itemStyle: {
+                  normal: {
+                    borderColor: color[i],
+                    borderWidth: 2,
+                    shadowBlur: 10,
+                    shadowColor: color[i],
+                    color: color[i]
+                  }
+                }
+              }
+            })
+          //else 中type需要整合添加的颜色
+console.log(typeList,'typeList');
+typeList=typeList.map((item,i)=>{
+  return{
+    name:item,
+    itemStyle: {
+                  normal: {
+                    borderColor: '#C07AB8',
+                    borderWidth: 2,
+                    shadowBlur: 10,
+                    shadowColor: '#C07AB8',
+                    color: '#C07AB8'
+                  }
+                }
+  }
+})
+this.echDataJson.push(...typeList)
+
+
+
+
+ //关系
+
+if('relation'){
+
+   for (var key1 in relation) {
+              //    console.log(key1, ':',relation[key1], 'rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr')
+              this.linksJson.push({ value: key1, arr:relation[key1] })
+            }
+            //             "relation": {
+            //     "因果关系": [],
+            //     "从属关系": [["故障", "故障原因"]]
+            // }
+// this.linksJson = this.linksJson.map((ele, i) => {
+//               return {
+//                 source:ele.arr[0] ? ele.arr[0] : '',
+//                 target:ele.arr[1] ? ele.arr[1] : '',
+//                 value: ele.value
+//               }
+//             })
+            this.linksJson = this.linksJson.map((ele, i) => {
+              return {
+                source: ele.arr
+                  .map(it => {
+                    return it[0] ? it[0] : ''
+                  })
+                  .toString(),
+                target: ele.arr
+                  .map(it => {
+                    return it[1] ? it[1] : ''
+                  })
+                  .toString(),
+                value: ele.value
+              }
+            })
+}
+this.echat()
+    },
+    //解析传过来的数据
+    resultData(){
+      var a=this.$route.query.result
+      a=JSON.parse(a)
+      
+      this.imp=a
+      
+    },
     //数据导入
     async dataImp(){
       const {data}=await this.$ajax({
         url:'/hehe/fm_dataCount?csvPath=/home/gnx/tmp/pycharm_project_180/data/csvdata',
-      })
-      console.log(data);
-      
+      })    
 this.imp=data
     },
         echat() {
@@ -97,125 +226,125 @@ this.imp=data
                 formatter: '{c}'
               }
             },
-            // data: data,
-            // links: links
-            data: [
-            {
-                "name": "项目",
-                 itemStyle: {
-                    normal: {
-                        borderColor: '#63adfc',
-                        borderWidth: 2,
-                        shadowBlur: 10,
-                        shadowColor: '#63adfc',
-                        color: '#63adfc',
-                    },
-                },
+            data: data,
+            links: links
+            // data: [
+            // {
+            //     "name": "项目",
+            //      itemStyle: {
+            //         normal: {
+            //             borderColor: '#63adfc',
+            //             borderWidth: 2,
+            //             shadowBlur: 10,
+            //             shadowColor: '#63adfc',
+            //             color: '#63adfc',
+            //         },
+            //     },
 
-            },
-            {
-                "name": "单位",
+            // },
+            // {
+            //     "name": "单位",
 
-            },
-            {
-                "name": "需求单位",
+            // },
+            // {
+            //     "name": "需求单位",
 
-            },
-             {
-                "name": "申报单位",
+            // },
+            //  {
+            //     "name": "申报单位",
 
-            },
-             {
-                "name": "曾合作单位",
+            // },
+            //  {
+            //     "name": "曾合作单位",
 
-            },
-             {
-                "name": "所在学会",
+            // },
+            //  {
+            //     "name": "所在学会",
 
-            },
-            {
-                "name": "专业领域",
-                itemStyle: {
-                    normal: {
-                        borderColor: '#07B0FE',
-                        borderWidth: 2,
-                        shadowBlur: 10,
-                        shadowColor: '#07B0FE',
-                        color: '#07B0FE',
-                    },
-                },
+            // },
+            // {
+            //     "name": "专业领域",
+            //     itemStyle: {
+            //         normal: {
+            //             borderColor: '#07B0FE',
+            //             borderWidth: 2,
+            //             shadowBlur: 10,
+            //             shadowColor: '#07B0FE',
+            //             color: '#07B0FE',
+            //         },
+            //     },
 
-            }, {
-                "name": "研究方向",
-                itemStyle: {
-                    normal: {
-                        borderColor: '#FDB408',
-                        borderWidth: 2,
-                        shadowBlur: 10,
-                        shadowColor: '#FDB408',
-                        color: '#FDB408',
-                    },
-                },
+            // }, {
+            //     "name": "研究方向",
+            //     itemStyle: {
+            //         normal: {
+            //             borderColor: '#FDB408',
+            //             borderWidth: 2,
+            //             shadowBlur: 10,
+            //             shadowColor: '#FDB408',
+            //             color: '#FDB408',
+            //         },
+            //     },
 
-            },
-            ],
-            links: [
-              {
-                source: '项目',
-                target: '单位',
-                value: '需求关系1'
-              },
-              {
-                source: '项目',
-                target: '专业领域',
-                value: '需求关系2'
-              },
-              {
-                source: '项目',
-                target: '单位',
-                value: '申报关系'
-              },
-              {
-                source: '单位',
-                target: '申报单位单位',
-                value: ''
-              },
-              {
-                source: '单位',
-                target: '需求单位',
-                value: ''
-              },
-              {
-                source: '单位',
-                target: '曾合作单位',
-                value: ''
-              },
-              {
-                source: '单位',
-                target: '所在学会',
-                value: ''
-              },
-              {
-                source: '申报单位',
-                target: '曾合作单位',
-                value: '合作关系'
-              },
-              {
-                source: '申报单位',
-                target: '研究方向',
-                value: '研究关系'
-              },
-              {
-                source: '专业领域',
-                target: '研究方向',
-                value: '包含关系1'
-              },
-              {
-                source: '所在学会',
-                target: '申报单位',
-                value: '包含关系2'
-              }
-            ]
+            // },
+            // ],
+            // links: [
+            //   {
+            //     source: '项目',
+            //     target: '单位',
+            //     value: '需求关系1'
+            //   },
+            //   {
+            //     source: '项目',
+            //     target: '专业领域',
+            //     value: '需求关系2'
+            //   },
+            //   {
+            //     source: '项目',
+            //     target: '单位',
+            //     value: '申报关系'
+            //   },
+            //   {
+            //     source: '单位',
+            //     target: '申报单位单位',
+            //     value: ''
+            //   },
+            //   {
+            //     source: '单位',
+            //     target: '需求单位',
+            //     value: ''
+            //   },
+            //   {
+            //     source: '单位',
+            //     target: '曾合作单位',
+            //     value: ''
+            //   },
+            //   {
+            //     source: '单位',
+            //     target: '所在学会',
+            //     value: ''
+            //   },
+            //   {
+            //     source: '申报单位',
+            //     target: '曾合作单位',
+            //     value: '合作关系'
+            //   },
+            //   {
+            //     source: '申报单位',
+            //     target: '研究方向',
+            //     value: '研究关系'
+            //   },
+            //   {
+            //     source: '专业领域',
+            //     target: '研究方向',
+            //     value: '包含关系1'
+            //   },
+            //   {
+            //     source: '所在学会',
+            //     target: '申报单位',
+            //     value: '包含关系2'
+            //   }
+            // ]
           }
         ]
       }

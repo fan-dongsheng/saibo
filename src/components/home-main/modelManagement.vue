@@ -2,58 +2,92 @@
   <div class="modelManagement">
     <!-- 模型管理首页 -->
     <!-- echarts -->
-    
-    
+
     <el-card>
       <div slot="header" class="clearfix">
-   <el-button
-      type="primary"
-      size="small"
-      
-      @click="$router.back()"
-    >上一步</el-button>
-    <div v-if="activeVerd!==9" style="float:left">
-      <el-button type="primary" size="small"  @click="addEntDilog.visible=true">新建实体</el-button>
-    <el-button type="primary" size="small"  @click="editEntDilog.visible=true">修改实体</el-button>
-    <el-button type="primary" size="small"  @click="delEntDilog.visible=true">删除实体</el-button>
-    <el-button type="primary" size="small"  @click="addRelationDilog.visible=true">新建关系</el-button>
-    <el-button type="primary" size="small"  @click="editRelationDilog.visible=true">修改关系</el-button>
-    <el-button type="primary" size="small" style="margin-right:10px;"  @click="delRelationDilog.visible=true">删除关系</el-button>
-    </div>
-  </div> 
+        <div>
+          <el-button
+            type="primary"
+            size="small"
+            style="margin-bottom:20px;"
+            @click="$router.back()"
+          >上一步</el-button>
+        </div>
+
+        <div v-if="activeVerd!==1000" style="display:flex;">
+          <el-button type="primary" size="small" @click="addEntDilog.visible=true">新建实体</el-button>
+          <el-button type="primary" size="small" @click="editEntDilog.visible=true">修改实体</el-button>
+          <el-button type="primary" size="small" @click="delEntDilog.visible=true">删除实体</el-button>
+          <el-button type="primary" size="small" @click="addRelationDilog.visible=true">新建关系</el-button>
+          <el-button type="primary" size="small" @click="editRelationDilog.visible=true">修改关系</el-button>
+          <el-button
+            type="primary"
+            size="small"
+            style="margin-right:10px;"
+            @click="delRelationDilog.visible=true"
+          >删除关系</el-button>
+          <el-button type="success" size="small" @click="down">下载模板</el-button>
+          <el-upload
+            style="margin-left:10px;"
+            action="/hehe/excelImport"
+            :show-file-list="false"
+            :data="uploadParams"
+            :on-success="uploadSuccess"
+            :on-error="uploadError"
+          >
+            <el-button type="success" size="small">excel导入</el-button>
+          </el-upload>
+
+          <el-button type="success" style="margin-left:10px;" size="small" @click="downExl">excel导出</el-button>
+          <el-button type="success" size="small" @click="downJson">json导出</el-button>
+          <el-tag style="margin-left:10px;color:#333;font-weight: 600;">项目名称：{{$route.query.name}}</el-tag>
+        </div>
+      </div>
       <div class="modelM">
-        <el-card class="cardddd">
+        <el-card class="cardddd" style="background-color: #fff;border:none;">
           <div class="version">
-                    版本号
-                    <div class="ver-cont">
-                      <div
+            版本号
+            <div class="ver-cont">
+              <el-timeline>
+                <el-timeline-item
+                  placement="top"
+                  v-for="(activity, index) in verD"
+                  :key="index"
+                  :timestamp="''"
+                >
+                  <div
+                    style="cursor: pointer;"
+                    :class="{active:index==activeVerd}"
+                    @click="activeVer(index,activity.d)"
+                  >{{activity.d}}</div>
+                </el-timeline-item>
+              </el-timeline>
+              <!-- <div
                         class="ver-cont1"
                         :class="{active:index==activeVerd}"
                         v-for="(item,index) in verD"
                         :key="index"
                         @click="activeVer(index,item.d)"
-                      >{{item.d}}</div>
-                      <!-- <div class="ver-cont2" >2</div> -->
-                    </div>
-                  </div>
+              >{{item.d}}</div>-->
+              <!-- <div class="ver-cont2" >2</div> -->
+            </div>
+          </div>
         </el-card>
-        
+
         <el-card class="cardddd" style="flex:1;">
-            <div class="json" >
-                      json
-                      <div class="jsonBorder" v-loading="jsonLoading">
-                        <pre style="background-color: rgb(1, 132, 252,0.5);border-radius: 5px;padding:10px;"><code id="json"></code></pre>
-                      </div>
-                    </div>
+          <div class="json">
+            json
+            <div class="jsonBorder" v-loading="jsonLoading">
+              <pre style="background-color: rgb(1, 132, 252,0.5);border-radius: 5px;padding:10px;"><code id="json"></code></pre>
+            </div>
+          </div>
         </el-card>
-        
 
         <!-- echarts ======================================================-->
 
         <el-card class="cardddd">
-<div id="main" style="width: 600px;height:600px;" v-loading="echLoading"></div>
+          <div id="main" style="width: 600px;height:600px;" v-loading="echLoading"></div>
         </el-card>
-        
       </div>
     </el-card>
     <!-- //新建实体弹窗 -->
@@ -66,18 +100,18 @@
           :rules="addEntDilog.rules"
           size="mini"
         >
-          <el-form-item label="实体名称:" prop="ent" >
-            <el-input v-model="addEntDilog.form.ent" autocomplete="off" ></el-input>
+          <el-form-item label="实体名称:" prop="ent">
+            <el-input v-model="addEntDilog.form.ent" autocomplete="off"></el-input>
           </el-form-item>
-           <el-form-item label="实体属性:" >
+          <el-form-item label="实体属性:">
             <el-input v-model="addEntDilog.form.attr" autocomplete="off"></el-input>
           </el-form-item>
-           <el-form-item label="实体属性值:" >
+          <!-- <el-form-item label="实体属性值:">
             <el-input v-model="addEntDilog.form.attr_val" autocomplete="off"></el-input>
-          </el-form-item>
+          </el-form-item> -->
           <!-- <el-form-item label="文件路径:" prop="file_path" >
             <el-input v-model="addEntDilog.form.file_path" autocomplete="off" disabled></el-input>
-          </el-form-item> -->
+          </el-form-item>-->
           <el-form-item label="版本号:" prop="version">
             <el-input v-model="this.version" autocomplete="off" disabled></el-input>
           </el-form-item>
@@ -98,17 +132,17 @@
           :rules="editEntDilog.rules"
           size="mini"
         >
-          <el-form-item label="新实体名称:" prop="new_ent" >
-            <el-input v-model="editEntDilog.form.new_ent" autocomplete="off" ></el-input>
+          <el-form-item label="旧实体名称:" prop="old_ent">
+            <el-input v-model="editEntDilog.form.old_ent" autocomplete="off"></el-input>
           </el-form-item>
-           <el-form-item label="旧实体名称:" prop="old_ent" >
-            <el-input v-model="editEntDilog.form.old_ent" autocomplete="off" ></el-input>
+          <el-form-item label="新实体名称:" prop="new_ent">
+            <el-input v-model="editEntDilog.form.new_ent" autocomplete="off"></el-input>
           </el-form-item>
-           
+        
+
           <!-- <el-form-item label="文件路径:" prop="file_path" >
             <el-input v-model="editEntDilog.form.file_path" autocomplete="off" disabled></el-input>
-          </el-form-item> -->
-         
+          </el-form-item>-->
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" type="primary" @click="handeleditent">保 存</el-button>
@@ -126,10 +160,9 @@
           :rules="delEntDilog.rules"
           size="mini"
         >
-          <el-form-item label="实体名称:" prop="ent" >
-            <el-input v-model="delEntDilog.form.ent" autocomplete="off" ></el-input>
+          <el-form-item label="实体名称:" prop="ent">
+            <el-input v-model="delEntDilog.form.ent" autocomplete="off"></el-input>
           </el-form-item>
-         
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" type="primary" @click="handeldelent">确 定</el-button>
@@ -147,13 +180,13 @@
           :rules="addRelationDilog.rules"
           size="mini"
         >
-          <el-form-item label="实体source:" prop="ent1" >
-            <el-input v-model="addRelationDilog.form.ent1" autocomplete="off" ></el-input>
+          <el-form-item label="实体source:" prop="ent1">
+            <el-input v-model="addRelationDilog.form.ent1" autocomplete="off"></el-input>
           </el-form-item>
-           <el-form-item label="实体target:" prop="ent2">
+          <el-form-item label="实体target:" prop="ent2">
             <el-input v-model="addRelationDilog.form.ent2" autocomplete="off"></el-input>
           </el-form-item>
-           <el-form-item label="关系:"  prop="rel">
+          <el-form-item label="关系:" prop="rel">
             <el-input v-model="addRelationDilog.form.rel" autocomplete="off"></el-input>
           </el-form-item>
           <!-- <el-form-item label="文件路径:" prop="file_path" >
@@ -161,7 +194,7 @@
           </el-form-item>
           <el-form-item label="版本号:" prop="version">
             <el-input v-model="this.version" autocomplete="off" disabled></el-input>
-          </el-form-item> -->
+          </el-form-item>-->
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" type="primary" @click="handeladdrelation">保 存</el-button>
@@ -179,19 +212,20 @@
           :rules="editRelationDilog.rules"
           size="mini"
         >
-          <el-form-item label="实体source(索引: 1):" prop="ent1" >
-            <el-input v-model="editRelationDilog.form.ent1" autocomplete="off" ></el-input>
-          </el-form-item>
-           <el-form-item label="实体target(索引：2):" prop="ent2">
-            <el-input v-model="editRelationDilog.form.ent2" autocomplete="off"></el-input>
-          </el-form-item>
-           <el-form-item label="关系(索引：0):"  prop="rel">
+        <el-form-item label="关系(索引：0):" prop="rel">
             <el-input v-model="editRelationDilog.form.rel" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="要修改的索引:"  prop="search_index">
+          <el-form-item label="实体source(索引: 1):" prop="ent1">
+            <el-input v-model="editRelationDilog.form.ent1" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="实体target(索引：2):" prop="ent2">
+            <el-input v-model="editRelationDilog.form.ent2" autocomplete="off"></el-input>
+          </el-form-item>
+          
+          <el-form-item label="要修改的索引:" prop="search_index">
             <el-input v-model="editRelationDilog.form.search_index" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="修改值为 :"  prop="new_value">
+          <el-form-item label="修改值为 :" prop="new_value">
             <el-input v-model="editRelationDilog.form.new_value" autocomplete="off"></el-input>
           </el-form-item>
           <!-- <el-form-item label="文件路径:" prop="file_path" >
@@ -199,7 +233,7 @@
           </el-form-item>
           <el-form-item label="版本号:" prop="version">
             <el-input v-model="this.version" autocomplete="off" disabled></el-input>
-          </el-form-item> -->
+          </el-form-item>-->
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" type="primary" @click="handeleditrelation">保 存</el-button>
@@ -217,13 +251,13 @@
           :rules="delRelationDilog.rules"
           size="mini"
         >
-          <el-form-item label="实体source:"  >
-            <el-input v-model="delRelationDilog.form.ent1" autocomplete="off" ></el-input>
+          <el-form-item label="实体source:">
+            <el-input v-model="delRelationDilog.form.ent1" autocomplete="off"></el-input>
           </el-form-item>
-           <el-form-item label="实体target:" >
+          <el-form-item label="实体target:">
             <el-input v-model="delRelationDilog.form.ent2" autocomplete="off"></el-input>
           </el-form-item>
-           <el-form-item label="关系:"  >
+          <el-form-item label="关系:">
             <el-input v-model="delRelationDilog.form.rel" autocomplete="off"></el-input>
           </el-form-item>
           <!-- <el-form-item label="文件路径:" prop="file_path" >
@@ -231,7 +265,7 @@
           </el-form-item>
           <el-form-item label="版本号:" prop="version">
             <el-input v-model="this.version" autocomplete="off" disabled></el-input>
-          </el-form-item> -->
+          </el-form-item>-->
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" type="primary" @click="handeldelrelation">保 存</el-button>
@@ -246,358 +280,417 @@
 export default {
   data() {
     return {
-      echLoading:false,
-      jsonLoading:false, //json数据loading
+      project: this.$route.query.dataPath, //项目管理传过来的数据名，u全局定义
+      echLoading: false,
+      jsonLoading: false, //json数据loading
       echDataJson: [], //echarts的data数据，需要接口处理
       linksJson: [], //关系links数据修改
-      verD: [{ d: 'v2' }, { d: 'v1' }], //版本号
-      activeVerd: 9, //激活样式
-      version:'v1', //当前点击的版本号
+      verD: [], //版本号
+      activeVerd: 1000, //激活样式
+      version: '', //当前点击的版本号
       //新增实体
-      addEntDilog:{
-        visible:false,
-        loading:false,
-        form:{
-          ent:'故障', //实体
-          attr:'名称',//实体属性
-          attr_val:'故障1',  //实体属性值,
-          project:'pro1',//项目名称
+      addEntDilog: {
+        visible: false,
+        loading: false,
+        form: {
+          ent: '故障', //实体
+          attr: '名称', //实体属性
+          // attr_val: '故障1' //实体属性值,
+          // project:this.project,//项目名称
           // file_path:'/home/gnx/tmp/pycharm_project_180',  //文件路径
-          version:'v1'//版本号
+          // version:this.version//版本号
         },
         rules: {
           ent: [{ required: true, message: '请输入实体名称', trigger: 'blur' }],
           attr: [{ required: true, message: '请输入实体属性', trigger: 'blur' }],
-          attr_val: [{ required: true, message: '请输入实体属性值', trigger: 'blur' }], 
+          // attr_val: [{ required: true, message: '请输入实体属性值', trigger: 'blur' }]
         }
-        
       },
       //修改实体
-      editEntDilog:{
-        visible:false,
-        loading:false,
-        form:{
-          new_ent:'',   //新实体
-          old_ent:'故障', //旧实体
+      editEntDilog: {
+        visible: false,
+        loading: false,
+        form: {
+          new_ent: '', //新实体
+          old_ent: '故障' //旧实体
           // file_path:'/home/gnx/tmp/pycharm_project_180',  //文件路径
-          project:'pro1',//项目名称
-          version:'v1'//文件名
+          // project:this.project,//项目名称
+          // version:this.version//文件名
         },
         rules: {
           new_ent: [{ required: true, message: '请输入实体名称', trigger: 'blur' }],
           old_ent: [{ required: true, message: '请输入实体名称', trigger: 'blur' }]
         }
-        
       },
-       //删除实体
-      delEntDilog:{
-        visible:false,
-        loading:false,
-        form:{
-          ent:'',   //实体
-        //  file_path:'/home/gnx/tmp/pycharm_project_180',  //文件路径
-         project:'pro1',//项目名称
-          version:'v1'//文件名
+      //删除实体
+      delEntDilog: {
+        visible: false,
+        loading: false,
+        form: {
+          ent: '' //实体
+          //  file_path:'/home/gnx/tmp/pycharm_project_180',  //文件路径
+          //  project:'pro1',//项目名称
+          //   version:'v1'//文件名
         },
         rules: {
           ent: [{ required: true, message: '请输入实体名称', trigger: 'blur' }]
         }
-        
       },
       //新增关系
-      addRelationDilog:{
-        visible:false,
-        loading:false,
-        form:{
-          ent1:'故障', //实体
-          rel:'因果关系',//关系
-          ent2:'故障原因',  //
-          project:'pro1',//项目名称
+      addRelationDilog: {
+        visible: false,
+        loading: false,
+        form: {
+          ent1: '故障', //实体
+          rel: '因果关系', //关系
+          ent2: '故障原因' //
+          // project:'pro1',//项目名称
           // file_path:'/home/gnx/tmp/pycharm_project_180',  //文件路径
-          version:'v1'//版本号
+          // version:'v1'//版本号
         },
         rules: {
           ent1: [{ required: true, message: '请输入实体名称', trigger: 'blur' }],
-          rel: [{ required: true, message: '请输入实体属性', trigger: 'blur' }],
-          ent2: [{ required: true, message: '请输入实体属性值', trigger: 'blur' }]
+          rel: [{ required: true, message: '请输入关系', trigger: 'blur' }],
+          ent2: [{ required: true, message: '请输入实体名称', trigger: 'blur' }]
         }
-        
       },
-       //修改关系
-      editRelationDilog:{
-        visible:false,
-        loading:false,
-        form:{
-          ent1:'故障', //实体
-          rel:'因果关系',//关系
-          ent2:'故障原因',  //
-          search_index:'0',  //搜素引擎
-          new_value:'从属关系',  //修改关系
-          project:'pro1',//项目名称
+      //修改关系
+      editRelationDilog: {
+        visible: false,
+        loading: false,
+        form: {
+          ent1: '故障', //实体
+          rel: '因果关系', //关系
+          ent2: '故障原因', //
+          search_index: '0', //搜素引擎
+          new_value: '从属关系' //修改关系
+          // project:'pro1',//项目名称
           // file_path:'/home/gnx/tmp/pycharm_project_180',  //文件路径
-          version:'v1'//版本号
+          // version:'v1'//版本号
         },
         rules: {
           ent1: [{ required: true, message: '请输入实体名称', trigger: 'blur' }],
-          rel: [{ required: true, message: '请输入实体属性', trigger: 'blur' }],
-          ent2: [{ required: true, message: '请输入实体属性值', trigger: 'blur' }],
-          search_index: [{ required: true, message: '请输入实体属性值', trigger: 'blur' }],
-          new_value: [{ required: true, message: '请输入实体属性值', trigger: 'blur' }]
+          rel: [{ required: true, message: '请输入关系', trigger: 'blur' }],
+          ent2: [{ required: true, message: '请输入实体名称', trigger: 'blur' }],
+          search_index: [{ required: true, message: '请输入索引', trigger: 'blur' }],
+          new_value: [{ required: true, message: '请输入修改值', trigger: 'blur' }]
         }
-        
       },
       //删除关系
-      delRelationDilog:{
-        visible:false,
-        loading:false,
-        form:{
-          ent1:'故障', //实体
-          rel:'因果关系',//关系
-          ent2:'故障原因',  //
-          project:'pro1',//项目名称
+      delRelationDilog: {
+        visible: false,
+        loading: false,
+        form: {
+          ent1: '故障', //实体
+          rel: '因果关系', //关系
+          ent2: '故障原因' //
+          // project:'pro1',//项目名称
           // file_path:'/home/gnx/tmp/pycharm_project_180',  //文件路径
-          version:'v1'//版本号
+          // version:'v1'//版本号
         },
         rules: {
           ent1: [{ required: true, message: '请输入实体名称', trigger: 'blur' }],
-          rel: [{ required: true, message: '请输入实体属性', trigger: 'blur' }],
-          ent2: [{ required: true, message: '请输入实体属性值', trigger: 'blur' }]
+          rel: [{ required: true, message: '请输入关系', trigger: 'blur' }],
+          ent2: [{ required: true, message: '请输入实体名称', trigger: 'blur' }]
         }
-        
-      },
-
+      }
+    }
+  },
+  computed: {
+    uploadParams() {
+      var date = new Date()
+      date = this.dateFormat('YYYY-mm-dd HH:MM', date)
+      return {
+        file_name: `${date}.xlsx`,
+        project: this.project
+      }
     }
   },
   methods: {
+    uploadSuccess() {
+      this.$message.success('上传成功')
+    },
+    uploadError() {
+      this.$message.success('上传失败')
+    },
+
+    //exel导出
+    downExl() {
+      window.open(`/hehe/excelExcelOutput?project=${this.project}&filename=${this.version}.json`)
+    },
+    //json导出
+    downJson() {
+      window.open(`/hehe/excelJsonOutport?project=${this.project}&filename=${this.version}.json`)
+    },
+    //下载模板
+    down() {
+      window.open('http://192.168.50.90:8000/excelDownload')
+    },
+    //日期转化控件
+    dateFormat(fmt, date) {
+      let ret
+      const opt = {
+        'Y+': date.getFullYear().toString(), // 年
+        'm+': (date.getMonth() + 1).toString(), // 月
+        'd+': date.getDate().toString(), // 日
+        'H+': date.getHours().toString(), // 时
+        'M+': date.getMinutes().toString(), // 分
+        'S+': date.getSeconds().toString() // 秒
+        // 有其他格式化字符需求可以继续添加，必须转化成字符串
+      }
+      for (let k in opt) {
+        ret = new RegExp('(' + k + ')').exec(fmt)
+        if (ret) {
+          fmt = fmt.replace(ret[1], ret[1].length == 1 ? opt[k] : opt[k].padStart(ret[1].length, '0'))
+        }
+      }
+      return fmt
+    },
     //获取版本号
-    async getVersion(){
-      const {data}=await this.$ajax({
-        url:`/hehe/mm_getVersionList?project=pro1`,
+    async getVersion() {
+      const { data } = await this.$ajax({
+        url: `/hehe/getVersionList?project=${this.$route.query.dataPath}`
       })
-      console.log(data,'获取版本号成功');
-      this.verD=data.map((item,index)=>{
+      console.log(data, '获取版本号成功')
+      this.verD = data.map((item, index) => {
         return {
-          d: item.substring( 0,item.lastIndexOf('.'))  
+          d: item.substring(0, item.lastIndexOf('.'))
+        }
+      })
+      this.activeVerd = 0
+      // this.activeVer(this.activeVerd ,this.version)
+      if (this.verD) {
+        this.version = this.verD[0].d
+        this.getJson(this.verD[0].d) //刷新json
+      }
+    },
+
+    //新建实体保存按钮
+    handeladdent() {
+      this.$refs.addEntForm.validate(async valid => {
+        if (valid) {
+          try {
+            var date = new Date()
+            date = this.dateFormat('YYYY-mm-dd HH:MM', date)
+            const { data } = await this.$ajax({
+              url: '/hehe/add_entity',
+              params: { ...this.addEntDilog.form, project: this.project, version: this.version, new_version: date }
+            })
+            //这里需要判断后台返回的是不是fail，如果是就拦截
+            if (data == 'fail') {
+              this.addEntDilog.visible = false
+              this.$message.error('添加的实体已存在')
+            } else {
+              console.log(data, '新增成功')
+              this.addEntDilog.visible = false
+              this.getVersion() //刷新版本号
+
+              this.$message.success('新增实体成功')
+            }
+          } catch (error) {
+            console.log(error, '新增失败')
+            this.addEntDilog.visible = false
+          }
+        } else {
+          console.log('error submit!!')
+          this.addEntDilog.visible = false
+          return false
         }
       })
     },
-  
-   //新建实体保存按钮
-   handeladdent(){
-this.$refs.addEntForm.validate(async(valid)=>{
-if(valid){
-  try {
-    const {data}=await this.$ajax({
-      url:'/hehe/add_entity',
-      params:this.addEntDilog.form
-    })
-    //这里需要判断后台返回的是不是fail，如果是就拦截
-    if(data=='fail'){
-this.addEntDilog.visible = false
-this.$message.error('添加的实体已存在')
-    }else{
-console.log(data,'新增成功');
-    this.addEntDilog.visible = false
-    this.getJson()
-    this.$message.success('新增实体成功')
-    }
-    
-  } catch (error) {
-    console.log(error,'新增失败');
-    this.addEntDilog.visible = false
-  }
-}else{
-   console.log('error submit!!');
-              this.addEntDilog.visible = false
-            return false;
-}
-})
-   },
-   //修改实体
-   handeleditent(){
-this.$refs.editEntForm.validate(async(valid)=>{
-if(valid){
-  try {
-    const {data}=await this.$ajax({
-      url:'/hehe/update_entity',
-      params:this.editEntDilog.form
-    })
-    if(data=='fail'){
-      this.editEntDilog.visible = false
-    this.$message.error('原实体不存在')
-    }else{
-console.log(data,'修改成功');
-    this.getJson()
-    this.editEntDilog.visible = false
-    this.$message.success('修改实体成功')
-    }
-    
-  } catch (error) {
-    console.log(error,'修改失败');
-    this.editEntDilog.visible = false
-  }
-}else{
-   console.log('error submit!!');
+    //修改实体
+    handeleditent() {
+      this.$refs.editEntForm.validate(async valid => {
+        if (valid) {
+          try {
+            var date = new Date()
+            date = this.dateFormat('YYYY-mm-dd HH:MM', date)
+            const { data } = await this.$ajax({
+              url: '/hehe/update_entity',
+              params: { ...this.editEntDilog.form, project: this.project, version: this.version, new_version: date }
+            })
+            if (data == 'fail') {
               this.editEntDilog.visible = false
-            return false;
-}
-})
-   },
-   //删除实体
-    handeldelent(){
-this.$refs.delEntForm.validate(async(valid)=>{
-if(valid){
-  try {
-    const {data}=await this.$ajax({
-      url:'/hehe/delete_entity',
-      params:this.delEntDilog.form
-    })
-    //判断
-    if(data=='fail'){
-      this.delEntDilog.visible = false
-    this.$message.error('实体不存在')
-    }else{
-console.log(data,'删除成功');
-    this.getJson()
-    this.delEntDilog.visible = false
-    this.$message.success('删除实体成功')
-    }
-    
-  } catch (error) {
-    console.log(error,'删除失败');
-    this.delEntDilog.visible = false
-  }
-}else{
-   console.log('error submit!!');
-              this.delEntDilog.visible= false
-            return false;
-}
-})
-   },  
-   //新增关系
-   async handeladdrelation(){
-this.$refs.addRelationForm.validate(async(valid)=>{
-if(valid){
-  try {
-    const {data}=await this.$ajax({
-      url:'/hehe/add_relation',
-      params:this.addRelationDilog.form
-    })
-    //判断后台给的数据，进行拦截
-    if(data=='fail'){
-    this.addRelationDilog.visible = false
-    this.$message.error('ent1、ent2不存在或新增的关系已存在')
-    }else{
-console.log(data,'新增成功');
-    this.getJson()
-    this.addRelationDilog.visible = false
-    this.$message.success('新增关系成功')
-    }
+              this.$message.error('原实体不存在')
+            } else {
+              console.log(data, '修改成功')
+              this.getVersion() //重新刷新版本号
 
-    
-  } catch (error) {
-    console.log(error,'新增失败');
-    this.addRelationDilog.visible = false
-  }
-}else{
-   console.log('error submit!!');
+              this.editEntDilog.visible = false
+              this.$message.success('修改实体成功')
+            }
+          } catch (error) {
+            console.log(error, '修改失败')
+            this.editEntDilog.visible = false
+          }
+        } else {
+          console.log('error submit!!')
+          this.editEntDilog.visible = false
+          return false
+        }
+      })
+    },
+    //删除实体
+    handeldelent() {
+      this.$refs.delEntForm.validate(async valid => {
+        if (valid) {
+          try {
+            var date = new Date()
+            date = this.dateFormat('YYYY-mm-dd HH:MM', date)
+            const { data } = await this.$ajax({
+              url: '/hehe/delete_entity',
+              params: { ...this.delEntDilog.form, project: this.project, version: this.version, new_version: date }
+            })
+            //判断
+            if (data == 'fail') {
+              this.delEntDilog.visible = false
+              this.$message.error('实体不存在')
+            } else {
+              console.log(data, '删除成功')
+              this.getVersion()
+
+              this.delEntDilog.visible = false
+              this.$message.success('删除实体成功')
+            }
+          } catch (error) {
+            console.log(error, '删除失败')
+            this.delEntDilog.visible = false
+          }
+        } else {
+          console.log('error submit!!')
+          this.delEntDilog.visible = false
+          return false
+        }
+      })
+    },
+    //新增关系
+    async handeladdrelation() {
+      this.$refs.addRelationForm.validate(async valid => {
+        if (valid) {
+          try {
+            var date = new Date()
+            date = this.dateFormat('YYYY-mm-dd HH:MM', date)
+            const { data } = await this.$ajax({
+              url: '/hehe/add_relation',
+              params: { ...this.addRelationDilog.form, project: this.project, version: this.version, new_version: date }
+            })
+            //判断后台给的数据，进行拦截
+            if (data == 'fail') {
               this.addRelationDilog.visible = false
-              
-            return false;
-}
-})
-   },
-   //修改关系
-   handeleditrelation(){
-this.$refs.editRelationForm.validate(async(valid)=>{
-if(valid){
-  try {
-    const {data}=await this.$ajax({
-      url:'/hehe/update_relation',
-      params:this.editRelationDilog.form
-    })
-    if(data=='fail'){
-      this.editRelationDilog.visible = false
-    this.$message.error('原关系三元组不存在')
-    }else{
-console.log(data,'修改成功');
-    this.getJson()
-    this.editRelationDilog.visible = false
-    this.$message.success('修改关系成功')
-    }
-    
-  } catch (error) {
-    console.log(error,'修改失败');
-    this.editRelationDilog.visible = false
-  }
-}else{
-   console.log('error submit!!');
+              this.$message.error('ent1、ent2不存在或新增的关系已存在')
+            } else {
+              console.log(data, '新增成功')
+              this.getVersion()
+
+              this.addRelationDilog.visible = false
+              this.$message.success('新增关系成功')
+            }
+          } catch (error) {
+            console.log(error, '新增失败')
+            this.addRelationDilog.visible = false
+          }
+        } else {
+          console.log('error submit!!')
+          this.addRelationDilog.visible = false
+
+          return false
+        }
+      })
+    },
+    //修改关系
+    handeleditrelation() {
+      this.$refs.editRelationForm.validate(async valid => {
+        if (valid) {
+          try {
+            var date = new Date()
+            date = this.dateFormat('YYYY-mm-dd HH:MM', date)
+            const { data } = await this.$ajax({
+              url: '/hehe/update_relation',
+              params: { ...this.editRelationDilog.form, project: this.project, version: this.version, new_version: date }
+            })
+            if (data == 'fail') {
               this.editRelationDilog.visible = false
-            return false;
-}
-})
-   },
-   //删除关系
-   async handeldelrelation(){
-     var valid=this.delRelationDilog.form.ent1 || this.delRelationDilog.form.ent2 || this.delRelationDilog.form.rel
-     if(valid){
-try {
-    const {data}=await this.$ajax({
-      url:'/hehe/delete_relation',
-      params:this.delRelationDilog.form
-    })
-    if(data=='fail'){
-       this.delRelationDilog.visible = false
-    this.$message.error('关系三元组不存在')
-    }else{
-console.log(data,'删除成功');
-    this.getJson()
-    this.delRelationDilog.visible = false
-    this.$message.success('删除成功')
-    }
-    
-  } catch (error) {
-    console.log(error,'删除失败');
-    this.delRelationDilog.visible = false
-  }
-     }else{
-      this.$message.warning('请输入实体或关系')
-     }
-// this.$refs.delRelationForm.validate(async(valid)=>{
-// if(valid){
-//   try {
-//     const {data}=await this.$ajax({
-//       url:'/hehe/delete_relation',
-//       params:this.delRelationDilog.form
-//     })
-//     console.log(data,'删除成功');
-//     this.getJson()
-//     this.delRelationDilog.visible = false
-//   } catch (error) {
-//     console.log(error,'删除失败');
-//     this.delRelationDilog.visible = false
-//   }
-// }else{
-//    console.log('error submit!!');
-//               this.delRelationDilog.visible = false
-//             return false;
-// }
-// })
-   },
+              this.$message.error('原关系三元组不存在')
+            } else {
+              console.log(data, '修改成功')
+              this.getVersion()
+
+              this.editRelationDilog.visible = false
+              this.$message.success('修改关系成功')
+            }
+          } catch (error) {
+            console.log(error, '修改失败')
+            this.editRelationDilog.visible = false
+          }
+        } else {
+          console.log('error submit!!')
+          this.editRelationDilog.visible = false
+          return false
+        }
+      })
+    },
+    //删除关系
+    async handeldelrelation() {
+      var valid = this.delRelationDilog.form.ent1 || this.delRelationDilog.form.ent2 || this.delRelationDilog.form.rel
+      if (valid) {
+        try {
+          var date = new Date()
+          date = this.dateFormat('YYYY-mm-dd HH:MM', date)
+          const { data } = await this.$ajax({
+            url: '/hehe/delete_relation',
+            params: { ...this.delRelationDilog.form, project: this.project, version: this.version, new_version: date }
+          })
+          if (data == 'fail') {
+            this.delRelationDilog.visible = false
+            this.$message.error('关系三元组不存在')
+          } else {
+            console.log(data, '删除成功')
+            this.getVersion()
+
+            this.delRelationDilog.visible = false
+            this.$message.success('删除成功')
+          }
+        } catch (error) {
+          console.log(error, '删除失败')
+          this.delRelationDilog.visible = false
+        }
+      } else {
+        this.$message.warning('请输入实体或关系')
+      }
+      // this.$refs.delRelationForm.validate(async(valid)=>{
+      // if(valid){
+      //   try {
+      //     const {data}=await this.$ajax({
+      //       url:'/hehe/delete_relation',
+      //       params:this.delRelationDilog.form
+      //     })
+      //     console.log(data,'删除成功');
+      //     this.getJson()
+      //     this.delRelationDilog.visible = false
+      //   } catch (error) {
+      //     console.log(error,'删除失败');
+      //     this.delRelationDilog.visible = false
+      //   }
+      // }else{
+      //    console.log('error submit!!');
+      //               this.delRelationDilog.visible = false
+      //             return false;
+      // }
+      // })
+    },
     //获取json文件、
     async getJson(d) {
-      this.jsonLoading=true
-     this.echDataJson = []
-    this.linksJson = []
+      this.jsonLoading = true
+      this.echDataJson = []
+      this.linksJson = []
 
       try {
-         
         const { data } = await this.$ajax({
           url: '/hehe/read_json',
           params: {
-            project:'pro1',
+            project: this.project,
             // file_path: `/home/gnx/tmp/pycharm_project_180`,
-            version: 'v1'
+            version: d
           }
         })
         console.log(data, '获取json文件test1')
@@ -605,61 +698,60 @@ console.log(data,'删除成功');
         let dataHtml = data
         let bigger = data //后套返回json数据需要处理成eachrts需要的数据
 
-//         let bigger={
-//     "entity": {
-//         "基金项目名称": {},
-//         "单位": {
-//             "type": ["需求单位", "申报单位", "曾合作单位", "所在学会"]
-//         },
-//         "专业领域": {},
-//         "研究方向": {}
-//     },
-//     "relation": {
-//         "需求关系1": [["项目", "单位"]],
-//         "需求关系2": [["项目", "专业领域"]],
-//         "申报关系": [["项目", "单位"]],
-//         "合作关系": [["申报单位", "曾合作单位"]],
-//         "研究关系": [["申报单位", "研究方向"]],
-//         "包含关系1": [["专业领域", "研究方向"]],
-//         "包含关系2": [["学会", "申报单位"]],
-//         "因果关系": [],
-//         "从属关系": []
-//     }
-// }
+        //         let bigger={
+        //     "entity": {
+        //         "基金项目名称": {},
+        //         "单位": {
+        //             "type": ["需求单位", "申报单位", "曾合作单位", "所在学会"]
+        //         },
+        //         "专业领域": {},
+        //         "研究方向": {}
+        //     },
+        //     "relation": {
+        //         "需求关系1": [["项目", "单位"]],
+        //         "需求关系2": [["项目", "专业领域"]],
+        //         "申报关系": [["项目", "单位"]],
+        //         "合作关系": [["申报单位", "曾合作单位"]],
+        //         "研究关系": [["申报单位", "研究方向"]],
+        //         "包含关系1": [["专业领域", "研究方向"]],
+        //         "包含关系2": [["学会", "申报单位"]],
+        //         "因果关系": [],
+        //         "从属关系": []
+        //     }
+        // }
         btn.textContent = JSON.stringify(dataHtml, null, '  ')
         //遍历后台返回的json对象
         //第一层最大的外圈
 
         for (var key in bigger) {
-          
           //   console.log(key, ':', bigger[key], '==================')
           //如果是实体的话
           if (key == 'entity') {
-            var typeList=[]  //key1设置一个空数组，这个主要是为了type这个添加数组设置的中间变量
+            var typeList = [] //key1设置一个空数组，这个主要是为了type这个添加数组设置的中间变量
             for (var key1 in bigger[key]) {
               console.log(key1, ':', bigger[key][key1], 'shitishishishiss')
               //判断对象有没有子集，有的话还需要遍历取出，添加到name
-           if(JSON.stringify(bigger[key][key1]) == "{}"){
-this.echDataJson.push({ name: key1 })
-           }else{
-             //单位里面继续套的type需要解析出来
-             
-            //  var typeList=[]
-             typeList.push(key1)
-for (const key2 in bigger[key][key1]) {
- console.log( key2,':', bigger[key][key1][key2], 'shitishishishiss============')
-//遍历type的数组val值,再加到数组中
-      for(const key3 in bigger[key][key1][key2]){
-        console.log(key3,':', bigger[key][key1][key2][key3], ',,,,,,,,,,,,,,,,,,,,,,,,,,,');
-        
-        typeList.push(bigger[key][key1][key2][key3])
-      }
+              if (JSON.stringify(bigger[key][key1]) == '[]') {
+                this.echDataJson.push({ name: key1 })
+              } else {
+                //单位里面继续套的type需要解析出来
 
-}
+                //  var typeList=[]
+                typeList.push(key1)
+                bigger[key][key1].forEach((ele, inx) => {
+                  this.echDataJson.push({ name: ele })
+                })
+                // for (const key2 in bigger[key][key1]) {
+                //  console.log( key2,':', bigger[key][key1][key2], 'shitishishishiss============')
+                // //遍历type的数组val值,再加到数组中
+                //       for(const key3 in bigger[key][key1][key2]){
+                //         console.log(key3,':', bigger[key][key1][key2][key3], ',,,,,,,,,,,,,,,,,,,,,,,,,,,');
 
+                //         typeList.push(bigger[key][key1][key2][key3])
+                //       }
 
-           }
-              
+                // }
+              }
             }
 
             var color = ['#06FDBC', '#0188FE', '#07B0FE', '#FDB408', '#00DB1C', '#0188FE']
@@ -678,12 +770,12 @@ for (const key2 in bigger[key][key1]) {
                 }
               }
             })
-          //else 中type需要整合添加的颜色
-console.log(typeList,'typeList');
-typeList=typeList.map((item,i)=>{
-  return{
-    name:item,
-    itemStyle: {
+            //else 中type需要整合添加的颜色
+            console.log(typeList, 'typeList')
+            typeList = typeList.map((item, i) => {
+              return {
+                name: item,
+                itemStyle: {
                   normal: {
                     borderColor: '#C07AB8',
                     borderWidth: 2,
@@ -692,22 +784,28 @@ typeList=typeList.map((item,i)=>{
                     color: '#C07AB8'
                   }
                 }
-  }
-})
-this.echDataJson.push(...typeList)
-
+              }
+            })
+            this.echDataJson.push(...typeList)
             // console.log(this.echDataJson,'+++++++++++++++++++++++++++++++++++++=');
           }
           if (key == 'relation') {
+           
             for (var key1 in bigger[key]) {
-              //    console.log(key1, ':', bigger[key][key1], 'rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr')
+              console.log(key1, ':', bigger[key][key1], 'rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr')
               this.linksJson.push({ value: key1, arr: bigger[key][key1] })
             }
             //             "relation": {
             //     "因果关系": [],
             //     "从属关系": [["故障", "故障原因"]]
             // }
-
+            // this.linksJson = this.linksJson.map((ele, i) => {
+            //   return {
+            //     source:ele.arr[0] ? ele.arr[0] : '',
+            //     target:ele.arr[1] ? ele.arr[1] : '',
+            //     value: ele.value
+            //   }
+            // })
             this.linksJson = this.linksJson.map((ele, i) => {
               return {
                 source: ele.arr
@@ -728,18 +826,18 @@ this.echDataJson.push(...typeList)
 
           this.echat()
           setTimeout(() => {
-            this.jsonLoading=false
-          }, 300);
-          
+            this.jsonLoading = false
+          }, 300)
         }
       } catch (error) {
-        this.jsonLoading=false
+        this.jsonLoading = false
         console.log(error, '获取信息错误')
       }
     },
     //点击下标点亮
     activeVer(i, d) {
       this.activeVerd = i
+      this.version = d //全局赋值版本号
       this.getJson(d)
       this.echDataJson = []
       this.linksJson = []
@@ -767,11 +865,11 @@ this.echDataJson.push(...typeList)
       //   }
       // }
 
-      let dataHtml = { entity: {}, relation: {} }
-      btn.textContent = JSON.stringify(dataHtml, null, '')
+      let dataHtml = { entity: { 实体1: {}, 实体2: {} }, relation: { 关系1: [['实体1', '实体2']] } }
+      btn.textContent = JSON.stringify(dataHtml, null, '  ')
     },
     echat() {
-      this.echLoading=true
+      this.echLoading = true
       // 基于准备好的dom，初始化echarts实例
       var myChart = this.$echarts.init(document.getElementById('main'))
       //获取后台数据的处理赋值
@@ -956,16 +1054,14 @@ this.echDataJson.push(...typeList)
       // 使用刚指定的配置项和数据显示图表。
       myChart.setOption(option)
       setTimeout(() => {
-        this.echLoading=false
-      }, 300);
-      
+        this.echLoading = false
+      }, 300)
     }
   },
   mounted() {
     this.getVersion() //获取版本号
     this.echat() //
     this.jsonData() //页面展示的json数据
-   
   }
 }
 </script>
@@ -978,21 +1074,22 @@ this.echDataJson.push(...typeList)
     margin: 24px;
     padding: 2px 20px;
     padding-bottom: 10px;
+    .clearfix {
+      overflow: hidden;
+    }
     .el-card__header {
       padding: 20px 0;
     }
     .el-card__body {
       padding: 20px 0;
-
     }
-   
   }
   .modelM {
     display: flex;
-    .cardddd{
+    .cardddd {
       margin: 24px 5px;
-      background-color: #F6F6F6;
-      box-shadow:none;
+      background-color: #f6f6f6;
+      box-shadow: none;
     }
     .version {
       .active {
