@@ -730,28 +730,31 @@ export default {
             var typeList = [] //key1设置一个空数组，这个主要是为了type这个添加数组设置的中间变量
             for (var key1 in bigger[key]) {
               console.log(key1, ':', bigger[key][key1], 'shitishishishiss')
-              //判断对象有没有子集，有的话还需要遍历取出，添加到name
-              if (JSON.stringify(bigger[key][key1]) == '[]') {
-                this.echDataJson.push({ name: key1 })
-              } else {
-                //单位里面继续套的type需要解析出来
 
-                //  var typeList=[]
-                typeList.push(key1)
-                bigger[key][key1].forEach((ele, inx) => {
-                  this.echDataJson.push({ name: ele })
-                })
-                // for (const key2 in bigger[key][key1]) {
-                //  console.log( key2,':', bigger[key][key1][key2], 'shitishishishiss============')
-                // //遍历type的数组val值,再加到数组中
-                //       for(const key3 in bigger[key][key1][key2]){
-                //         console.log(key3,':', bigger[key][key1][key2][key3], ',,,,,,,,,,,,,,,,,,,,,,,,,,,');
+              this.echDataJson.push({ name: key1 })
 
-                //         typeList.push(bigger[key][key1][key2][key3])
-                //       }
+              // //判断对象有没有子集，有的话还需要遍历取出，添加到name
+              // if (JSON.stringify(bigger[key][key1]) == '[]') {
+              //   this.echDataJson.push({ name: key1 })
+              // } else {
+              //   //单位里面继续套的type需要解析出来
 
-                // }
-              }
+              //   //  var typeList=[]
+              //   typeList.push(key1)
+              //   bigger[key][key1].forEach((ele, inx) => {
+              //     this.echDataJson.push({ name: ele })
+              //   })
+              //   // for (const key2 in bigger[key][key1]) {
+              //   //  console.log( key2,':', bigger[key][key1][key2], 'shitishishishiss============')
+              //   // //遍历type的数组val值,再加到数组中
+              //   //       for(const key3 in bigger[key][key1][key2]){
+              //   //         console.log(key3,':', bigger[key][key1][key2][key3], ',,,,,,,,,,,,,,,,,,,,,,,,,,,');
+
+              //   //         typeList.push(bigger[key][key1][key2][key3])
+              //   //       }
+
+              //   // }
+              // }
             }
 
             var color = ['#06FDBC', '#0188FE', '#07B0FE', '#FDB408', '#00DB1C', '#0188FE']
@@ -770,30 +773,36 @@ export default {
                 }
               }
             })
-            //else 中type需要整合添加的颜色
-            console.log(typeList, 'typeList')
-            typeList = typeList.map((item, i) => {
-              return {
-                name: item,
-                itemStyle: {
-                  normal: {
-                    borderColor: '#C07AB8',
-                    borderWidth: 2,
-                    shadowBlur: 10,
-                    shadowColor: '#C07AB8',
-                    color: '#C07AB8'
-                  }
-                }
-              }
-            })
-            this.echDataJson.push(...typeList)
+            // //else 中type需要整合添加的颜色
+            // console.log(typeList, 'typeList')
+            // typeList = typeList.map((item, i) => {
+            //   return {
+            //     name: item,
+            //     itemStyle: {
+            //       normal: {
+            //         borderColor: '#C07AB8',
+            //         borderWidth: 2,
+            //         shadowBlur: 10,
+            //         shadowColor: '#C07AB8',
+            //         color: '#C07AB8'
+            //       }
+            //     }
+            //   }
+            // })
+            // this.echDataJson.push(...typeList)
             // console.log(this.echDataJson,'+++++++++++++++++++++++++++++++++++++=');
           }
           if (key == 'relation') {
            
             for (var key1 in bigger[key]) {
               console.log(key1, ':', bigger[key][key1], 'rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr')
-              this.linksJson.push({ value: key1, arr: bigger[key][key1] })
+             bigger[key][key1].forEach(element => {
+               
+               console.log(element);
+               this.linksJson.push({ value: key1, source:element[0],target:element[1] })
+               
+             });
+              // this.linksJson.push({ value: key1, arr: bigger[key][key1] })
             }
             //             "relation": {
             //     "因果关系": [],
@@ -806,28 +815,30 @@ export default {
             //     value: ele.value
             //   }
             // })
-            this.linksJson = this.linksJson.map((ele, i) => {
-              return {
-                source: ele.arr
-                  .map(it => {
-                    return it[0] ? it[0] : ''
-                  })
-                  .toString(),
-                target: ele.arr
-                  .map(it => {
-                    return it[1] ? it[1] : ''
-                  })
-                  .toString(),
-                value: ele.value
-              }
-            })
+            console.log(this.linksJson);
+           
+            // this.linksJson = this.linksJson.map((ele, i) => {
+            //   return {
+            //     source: ele.arr
+            //       .map(it => {
+            //         return it[0] ? it[0] : ''
+            //       })
+            //       .toString(),
+            //     target: ele.arr
+            //       .map(it => {
+            //         return it[1] ? it[1] : ''
+            //       })
+            //       .toString(),
+            //     value: ele.value
+            //   }
+            // })
           }
           console.log(this.linksJson, 'lllllllllllllllllllllllaaaaaaaaaaaaaaaaaaaaaaaaa')
 
           this.echat()
           setTimeout(() => {
             this.jsonLoading = false
-          }, 300)
+          }, 0)
         }
       } catch (error) {
         this.jsonLoading = false
@@ -1055,7 +1066,7 @@ export default {
       myChart.setOption(option)
       setTimeout(() => {
         this.echLoading = false
-      }, 300)
+      }, 0)
     }
   },
   mounted() {

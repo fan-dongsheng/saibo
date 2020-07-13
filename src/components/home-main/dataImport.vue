@@ -50,31 +50,31 @@ this.resultData()
  var typeList=[] 
   for (const key in ent) {
     console.log(key,":",ent[key]);
-    
-       if(JSON.stringify(ent[key]) == "[]"){
-this.echDataJson.push({ name: key })
-           }else{
-             //单位里面继续套的type需要解析出来
+    this.echDataJson.push({ name: key })
+//        if(JSON.stringify(ent[key]) == "[]"){
+// this.echDataJson.push({ name: key })
+//            }else{
+//              //单位里面继续套的type需要解析出来
              
-            //  var typeList=[]
+//             //  var typeList=[]
              
-             typeList.push(key)
-                ent[key].forEach((ele, inx) => {
-                  this.echDataJson.push({ name: ele })
-                })
-// for (const key1 in ent[key]) {
-//  console.log( key1,':', ent[key][key1], 'shitishishishiss============')
-// //遍历type的数组val值,再加到数组中
-//       for(const key2 in ent[key][key1]){
-//         console.log(key2,':', ent[key][key1][key2], ',,,,,,,,,,,,,,,,,,,,,,,,,,,');
+//              typeList.push(key)
+//                 ent[key].forEach((ele, inx) => {
+//                   this.echDataJson.push({ name: ele })
+//                 })
+// // for (const key1 in ent[key]) {
+// //  console.log( key1,':', ent[key][key1], 'shitishishishiss============')
+// // //遍历type的数组val值,再加到数组中
+// //       for(const key2 in ent[key][key1]){
+// //         console.log(key2,':', ent[key][key1][key2], ',,,,,,,,,,,,,,,,,,,,,,,,,,,');
         
-//         typeList.push(ent[key][key1][key2])
-//       }
+// //         typeList.push(ent[key][key1][key2])
+// //       }
 
-// }
+// // }
 
 
-           }
+//            }
     
   }
 
@@ -95,22 +95,22 @@ this.echDataJson.push({ name: key })
               }
             })
           //else 中type需要整合添加的颜色
-console.log(typeList,'typeList');
-typeList=typeList.map((item,i)=>{
-  return{
-    name:item,
-    itemStyle: {
-                  normal: {
-                    borderColor: '#C07AB8',
-                    borderWidth: 2,
-                    shadowBlur: 10,
-                    shadowColor: '#C07AB8',
-                    color: '#C07AB8'
-                  }
-                }
-  }
-})
-this.echDataJson.push(...typeList)
+// console.log(typeList,'typeList');
+// typeList=typeList.map((item,i)=>{
+//   return{
+//     name:item,
+//     itemStyle: {
+//                   normal: {
+//                     borderColor: '#C07AB8',
+//                     borderWidth: 2,
+//                     shadowBlur: 10,
+//                     shadowColor: '#C07AB8',
+//                     color: '#C07AB8'
+//                   }
+//                 }
+//   }
+// })
+// this.echDataJson.push(...typeList)
 
 
 
@@ -121,7 +121,11 @@ if('relation'){
 
    for (var key1 in relation) {
               //    console.log(key1, ':',relation[key1], 'rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr')
-              this.linksJson.push({ value: key1, arr:relation[key1] })
+              relation[key1].forEach(element => {
+                this.linksJson.push({ value: key1, source:element[0],target:element[1]  })
+              })
+              
+              // this.linksJson.push({ value: key1, arr:relation[key1] })
             }
             //             "relation": {
             //     "因果关系": [],
@@ -134,26 +138,30 @@ if('relation'){
 //                 value: ele.value
 //               }
 //             })
-            this.linksJson = this.linksJson.map((ele, i) => {
-              return {
-                source: ele.arr
-                  .map(it => {
-                    return it[0] ? it[0] : ''
-                  })
-                  .toString(),
-                target: ele.arr
-                  .map(it => {
-                    return it[1] ? it[1] : ''
-                  })
-                  .toString(),
-                value: ele.value
-              }
-            })
+console.log(this.linksJson);
+
+            // this.linksJson = this.linksJson.map((ele, i) => {
+            //   return {
+            //     source: ele.arr
+            //       .map(it => {
+            //         return it[0] ? it[0] : ''
+            //       })
+            //       .toString(),
+            //     target: ele.arr
+            //       .map(it => {
+            //         return it[1] ? it[1] : ''
+            //       })
+            //       .toString(),
+            //     value: ele.value
+            //   }
+            // })
 }
 this.echat()
     },
     //解析传过来的数据
     resultData(){
+      
+      
       var a=this.$route.query.result
       a=JSON.parse(a)
       

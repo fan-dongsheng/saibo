@@ -127,7 +127,7 @@ export default {
     this.menuLoading=true
     window.setTimeout(() => {
       this.menuLoading=false
-    }, 300);
+    }, 0);
     
   }
 }

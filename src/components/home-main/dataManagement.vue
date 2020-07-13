@@ -18,8 +18,9 @@
         :header-cell-style="{ background: '#E5F0FF',color:'#6D87A7',textAlign:'center' }"
         :cell-style="cellstyle"
         @selection-change="handleSelectionChange"
+        :row-key="getRowKeys"
       >
-        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column type="selection" width="55" :reserve-selection="true"></el-table-column>
         <el-table-column label="文件名称" >
           <template slot-scope="scope">{{ scope.row.name }}</template>
         </el-table-column>
@@ -66,6 +67,10 @@
 export default {
   data() {
     return {
+       // 获取row的key值
+       getRowKeys(row) {
+            return row.name
+        },
       dataPath:this.$route.query.dataPath,  //数据集名称
       page: {
         total: 0, // 总条数
@@ -144,11 +149,14 @@ return 'text-align:center;height:46px;line-height:46px;padding:0;border-right: 1
    async pushbank(){
 const {data} =await this.$ajax({
         url:'/hehe/into',
-        params:{csvdatapath:this.$route.query.dataPath,
+        
+        params:{datasetname:this.dataPath,
+        filelist: 'relation.csv,entity.csv',
         modelpath:'/home/gnx/tmp/pycharm_project_180/data/model/pro1/v1.json'}
       })
       console.log('入库成功',data);
       this.$message.success('入库成功')
+       this.$router.push({path:'/dataImport',query:{result:data.result,model:data.model}})
     },
     //批量入库
     async allBank(){
@@ -223,7 +231,7 @@ this.getFileList()
       //  this.multipleSelection.concat(this.mut)  //赋值给本地数组
       setTimeout(() => {
         this.daLoading=false
-      }, 300);
+      }, 0);
       } catch (error) {
         this.daLoading=false
       }
@@ -262,6 +270,8 @@ this.getFileList()
 
     //表格多选
     handleSelectionChange(val) {
+      console.log(this.multipleSelection);
+      
         this.mut.push(...val)
      console.log(val);
      console.log(this.mut);
