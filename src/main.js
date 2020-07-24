@@ -25,7 +25,6 @@ Vue.prototype.$ajax = axios
 Vue.prototype.$echarts = echarts;
 new Vue({
     router,
-
     store,
     render: h => h(App)
 }).$mount('#app')

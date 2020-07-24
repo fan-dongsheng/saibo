@@ -58,13 +58,13 @@ const routes = [
                     import ('@/components/home-main/modelManagement.vue')
                    
             },
-            // {
-            //     path: 'mapQuiz',
-            //     name: 'mapQuiz',
-            //     component: () =>
-            //         import ('@/components/home-main/mapQuiz.vue')
+            {
+                path: 'preprocess',
+                name: 'preprocess',
+                component: () =>
+                    import ('@/components/home-main/preprocess.vue')
                    
-            // }
+            }
             
         ]
     }

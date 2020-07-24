@@ -6,7 +6,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
 
     state: {
-
+        tablePE:null,
         curContextTabId: '',
         keepAliveTagsList: [],
         tabPanelHeight: '',
@@ -14,7 +14,9 @@ const store = new Vuex.Store({
     },
 
     mutations: { //对state进行修改
-
+        tablePE(state,value){
+            state.tablePE=value
+        },
         // 保存右键点击tab的id
         saveCurContextTabId(state, curContextTabId) {
             state.curContextTabId = curContextTabId

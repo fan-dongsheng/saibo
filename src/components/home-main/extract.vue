@@ -95,7 +95,7 @@
       <div class="title">a.txt标注补充</div>
 
       <div class="cont">      
-        <el-card>
+        <el-card class="htmlx">
           <p v-html="text"></p>
         </el-card>
         <!-- <el-card v-loading="marLoading">
@@ -110,13 +110,18 @@
         <!-- //右侧的列表展示 -->
         <el-card class="list">
           <!-- //右侧添加类别按钮 -->
-          <div style="font-weight:600;margin-bottom:10px;">点击标注 ：</div>
-          <div class="list-cont" v-for="(item,index) in listMark" :key="index">
-            <el-button size="small" round @click="selectText(item.color,item.name)">{{item.name}}</el-button>
+        <div style="font-weight:600;margin-bottom:10px;">点击标注 ：
+          <!-- <span @click="addLabel" style="margin-left:10px;border:1px #ccc solid;padding:5px;">+</span> -->
           </div>
-          <!-- <div>
+          <div class="list-cont" v-for="(item,index) in listMark" :key="index">
+            <el-button size="small" round @click="selectText(item.color,item.label)">{{item.label}}</el-button>
+            
+          </div>
+           
+          <el-button style="margin-bottom:8px;" type="danger" size="small" round @click="cancle()">取消标注</el-button>
+          <div>
             <el-button type="primary" size="small" round @click="submit">保存</el-button>
-          </div> -->
+          </div>
           <!-- <div class="list-cont" v-for="(item,index) in listMark" :key="index">
             <div
               class="a"
@@ -141,6 +146,7 @@ export default {
   data() {
     return {
       //后台文本数组
+     
 						dataArr: [{
 								content: '相信在高考考场上,语文的第一大困难就是阅读量',
 							},
@@ -187,6 +193,24 @@ export default {
     }
   },
   methods: {
+    //增加右侧类型
+    addLabel(){
+      
+    },
+    //取消标注
+    cancle(){
+      let selectionObj = window.getSelection();
+      let selectedText = selectionObj.toString();
+      console.log(selectedText);
+      this.text = this.keywordscolorful(this.text, selectedText, '#000')
+      console.log(this.config);
+      this.config.forEach((item,index)=>{
+        if(selectedText==item.content){
+          
+          this.config.splice(index,1)
+        }
+      })
+    },
     //初始化，把文本数组转换一段文字
 					init() {
 						this.text = '';
@@ -237,13 +261,16 @@ export default {
 					//保存高亮配置
 					submit() {
 						console.log("保存到后台的配置:", this.config)
-            console.log(this.text);
+            console.log(this.text);    
+                
             this.$ajax({
                url: `/hehe/marksave`,
                params:{
-                 data:this.config
+                 data:JSON.stringify (this.config),
+                 path: `/${this.$route.query.dataPath}/${this.$route.params.name}`
                }
             })
+            this.textHighlight()  //高亮数组
 						
 					},
     //标注右侧列表
@@ -269,19 +296,20 @@ export default {
     },
     //遍历右侧数组给到config想要的数据
     pushConfig(){
-       var bgColor = ['#06FDBC', '#07B0FE', '#F6FE05', '#FDB408', '#00DB1C','#07B0FE', '#F6FE05']
+       var bgColor = ['#06FDBC', '#07B0FE', '#F6FE05', '#FDB408','#F5DEB3', '#00DB1C','#07B0FE', '#F6FE05','#FFB6C1','#DC143C',
+       '#DB7093','#C71585','#FFA500','#DA70D6','#8B008B','#6A5ACD','#B0C4DE','#00BFFF','#B8860B']
       var cog= this.listMark
       this.listMark=cog.map((item,index)=>{
         return{
           content:item.name,
-          name:item.label,
+          label:item.label,
           color:bgColor[index]
         }
       })
       this.config=cog.map((item,index)=>{
         return{
           content:item.name,
-          name:item.label,
+          label:item.label,
           color:bgColor[index]
         }
       })
@@ -714,13 +742,16 @@ export default {
     .cont {
       font-size: 16px;
       display: flex;
-
+  justify-content: space-between;
+  .htmlx{
+    
+  }
       .cont-mak {
         margin-bottom: 10px;
       }
       .list {
-        margin-left: 200px;
-        width: 400px;
+        margin-left: 20px;
+        min-width: 200px;
         .list-input {
           margin-bottom: 10px;
         }

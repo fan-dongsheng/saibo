@@ -72,6 +72,15 @@ export default {
           path: 'projectManagement',
           menuorigin: 'local'
         },
+         {
+          index: 'preprocess',
+          title: '数据预处理',
+          name: 'preprocess',
+          icon: '1',
+          component: '@/components/preprocess.vue',
+          path: 'preprocess',
+          menuorigin: 'local'
+        },
         {
           index: 'dataManagement',
           title: '数据管理',
@@ -99,15 +108,7 @@ export default {
           path: 'dataImport',
           menuorigin: 'local'
         },
-        // {
-        //   index: 'mapQuiz',
-        //   title: '图谱问答',
-        //   name: 'mapQuiz',
-        //   icon: 'u196',
-        //   component: '@/components/mapQuiz.vue',
-        //   path: 'mapQuiz',
-        //   menuorigin: 'local'
-        // },
+       
       ],
       // 左侧菜单数据
       menulist: []

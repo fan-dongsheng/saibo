@@ -2,12 +2,12 @@
   <div class="dataManagement">
     <el-card v-loading="daLoading">
       <div slot="header" class="clearfix">
-    <div class="title">数据管理</div>
+    <div class="title">{{$route.params.name}}</div>
     <el-button type="success" v-if="$route.query.dataType!='s'" class="extrt" size="small" @click="allEart">批量抽取</el-button>
     <el-button type="success" class="extrt" size="small" @click="allBank">批量入库</el-button>
     <el-button type="primary" size="small" style="margin-left:30px" @click="$router.back()">上一步</el-button>
     
-    <el-tag color="#396fff" style="margin-left:500px;color:#fff;">项目名称：{{$route.params.name}}</el-tag>
+    <!-- <el-tag color="#396fff" style="margin-left:500px;color:#fff;">项目名称：{{$route.params.name}}</el-tag> -->
   </div>  
       <el-table
       border
@@ -28,18 +28,18 @@
         <el-table-column label="入库" v-if="$route.query.dataType=='s'">
           <template slot-scope="scope">{{ scope.row.bank | bank}}</template>
         </el-table-column>
-        <el-table-column label="抽取" v-else>
+        <el-table-column label="抽取" v-else width="100">
           <template slot-scope="scope">{{ scope.row.extract | extract}}</template>
         </el-table-column>
         
-        <el-table-column label="标记" v-if="$route.query.dataType!='s'">
+        <el-table-column label="标记" v-if="$route.query.dataType!='s'" width="100">
           <template slot-scope="scope">{{ scope.row.mark | mark}}</template>
         </el-table-column>
         
         <!-- <el-table-column prop="extract" label="抽取" ></el-table-column> -->
         <!-- <el-table-column prop="mark" label="标记" ></el-table-column>
         <el-table-column prop="bank" label="入库" ></el-table-column> item.substring( 0,item.lastIndexOf('.'))  -->
-        <el-table-column label="操作" >
+        <el-table-column label="操作" width="150">
           <template slot-scope="scope">
             <!-- <el-button @click="delData(scope.row)" type="text" size="small">删除</el-button> -->
         <el-button type="text" size="small" v-if="scope.row.name.substring( scope.row.name.lastIndexOf('.')+1)=='txt'" @click="pushextract(scope.row)">抽取</el-button>
@@ -147,6 +147,7 @@ return 'text-align:center;height:46px;line-height:46px;padding:0;border-right: 1
     },
     //入库
    async pushbank(){
+     this.daLoading=true
 const {data} =await this.$ajax({
         url:'/hehe/into',
         
@@ -163,6 +164,7 @@ const {data} =await this.$ajax({
       if(this.multipleSelection.length<=0){
          this.$message.warning('请先选择数据')
       }else{
+        this.daLoading=true
  const {data} =await this.$ajax({
         url:'/hehe/into',
         params:{datasetname:this.dataPath,
@@ -298,6 +300,14 @@ this.getFileList()
     },
     //标注
     pushmark(row){
+      console.log(row);
+      if(row.extract=='false'){
+        this.$alert('请先进行抽取', '提示', {
+          confirmButtonText: '确定',
+          type: 'warning'
+        })
+        return
+      }
       this.$router.push(`/dataManagement/${row.name}/${row.mark?'标记':'标记'}?dataPath=${this.$route.query.dataPath}`)
     }
   },

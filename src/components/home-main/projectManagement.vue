@@ -3,6 +3,19 @@
     <el-card v-loading="tableLoading">
       <div slot="header" class="clearfix">
         <el-button type="primary" class="add" size="small" @click="showAddfolderDialog">新建项目</el-button>
+        <!-- <el-button type="primary" class="add" size="small" @click="showData()">数据预处理</el-button> -->
+        <el-upload
+        
+            style="margin-left:10px;"
+            action="/hehe/uploadexcel"
+            :show-file-list="false"
+            :data="uploadParams"
+            :on-success="uploadSuccess"
+            :on-error="uploadError"
+          >
+            <el-button class="add" type="primary" size="small">excel导入</el-button>
+          </el-upload>
+        
       </div>
       <el-table
         border
@@ -11,7 +24,7 @@
         :header-cell-style="{ background: '#E5F0FF',color:'#6D87A7',textAlign:'center' }"
         :cell-style="cellstyle"
       >
-        <el-table-column prop="name" label="项目名称" width="100"></el-table-column>
+        <el-table-column prop="name" label="项目名称" width="200"></el-table-column>
         <el-table-column label="数据集" show-overflow-tooltip>
           <template slot-scope="scope" class>
             <el-button
@@ -33,7 +46,7 @@
           </template>
         </el-table-column>
         <!-- <el-table-column prop="atlas" label="图谱"></el-table-column> -->
-        <el-table-column label="数据类型">
+        <el-table-column label="数据类型" width="100">
           <template slot-scope="scope">{{ scope.row.dataType=='s' ?'结构化': '非结构化' }}</template>
         </el-table-column>
         <el-table-column prop="date" label="时间"></el-table-column>
@@ -302,8 +315,30 @@ export default {
       }
     }
   },
-
+computed: {
+    uploadParams() {
+      // var date = new Date()
+      // date = this.dateFormat('YYYY-mm-dd HH:MM', date)
+      return {
+        // file_name: `${date}.xlsx`,
+        // project: this.project
+      }
+    }
+  },
   methods: {
+    //数据预处理
+    uploadSuccess(response, file, fileList) {
+      console.log(response, file, fileList);
+      this.$message.success('上传成功')
+      this.$store.commit('tablePE',response)
+      this.$router.push('preprocess')
+    },
+    uploadError() {
+      this.$message.success('上传失败')
+    },
+    showData(){
+this.$router.push('preprocess')
+    },
     handelModel(valued) {
       console.log(valued)
       console.log(this.value1, '===========================')
@@ -391,7 +426,8 @@ export default {
             dataPath: item[1],
             modelPath: item[2],
             dataType: item[3],
-            date:item[4]
+            date:item[4],
+            description:item[5]
           }
         })
         this.tableLoading = false
@@ -566,6 +602,9 @@ this.getProjectList()
   height: 100%;
   position: relative;
   border: 1px solid rgb(242, 243, 244);
+  .clearfix{
+    display: flex;
+  }
   .imgs {
     display: flex;
     align-items: center;
