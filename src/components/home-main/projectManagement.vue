@@ -329,7 +329,7 @@ computed: {
     //数据预处理
     uploadSuccess(response, file, fileList) {
       console.log(response, file, fileList);
-      this.$message.success('上传成功')
+      this.$message.success('导入成功')
       this.$store.commit('tablePE',response)
       this.$router.push('preprocess')
     },

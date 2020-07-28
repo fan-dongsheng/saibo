@@ -76,7 +76,7 @@ export default {
           index: 'preprocess',
           title: '数据预处理',
           name: 'preprocess',
-          icon: '1',
+          icon: '5',
           component: '@/components/preprocess.vue',
           path: 'preprocess',
           menuorigin: 'local'

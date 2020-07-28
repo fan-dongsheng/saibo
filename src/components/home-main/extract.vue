@@ -112,6 +112,18 @@
           <!-- //右侧添加类别按钮 -->
         <div style="font-weight:600;margin-bottom:10px;">点击标注 ：
           <!-- <span @click="addLabel" style="margin-left:10px;border:1px #ccc solid;padding:5px;">+</span> -->
+         
+          <el-input
+          style="margin-top:5px;"
+          v-if="inputVisible"
+          ref="saveTagInput"
+          size="small"
+          placeholder="请输入内容"
+          @keyup.enter.native="handleInputConfirm"
+          @blur="handleInputConfirm"
+          v-model="inputValue">
+  </el-input>
+   <el-button v-else size="small" type="primary" icon="el-icon-plus" circle @click="showInput"></el-button>
           </div>
           <div class="list-cont" v-for="(item,index) in listMark" :key="index">
             <el-button size="small" round @click="selectText(item.color,item.label)">{{item.label}}</el-button>
@@ -145,6 +157,7 @@
 export default {
   data() {
     return {
+      inputAdd:'',
       //后台文本数组
      
 						dataArr: [{
@@ -195,14 +208,47 @@ export default {
   methods: {
     //增加右侧类型
     addLabel(){
-      
+      this.inputVisible = true
+    },
+     handleInputConfirm() {
+      this.inputVisible = false
+      if(this.inputValue){
+        
+        for (let index = 0; index <  this.listMark.length; index++) {
+          if(this.listMark[index].label == this.inputValue){
+                  return 
+          }
+          
+        }
+        // this.listMark.forEach((item,index)=>{
+        //   if(item.label==this.inputValue){
+           
+        //   }
+        // })
+ this.listMark.push({
+        name:String,
+        label:this.inputValue
+      })
+      console.log(this.listMark);
+      this.inputValue = ''
+      this.pushConfig()
+      }
+     
+    },
+    //标注右侧的input改变
+   
+    showInput() {
+      this.inputVisible = true
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
     },
     //取消标注
     cancle(){
       let selectionObj = window.getSelection();
       let selectedText = selectionObj.toString();
       console.log(selectedText);
-      this.text = this.keywordscolorful(this.text, selectedText, '#000')
+      this.text = this.keywordscolorful(this.text, selectedText, '#303133')
       console.log(this.config);
       this.config.forEach((item,index)=>{
         if(selectedText==item.content){
@@ -417,17 +463,7 @@ export default {
     //   // })
     //   // this.listMark.push(bgRight)
     // },
-    //标注右侧的input改变
-    handleInputConfirm() {
-      this.inputVisible = false
-      this.inputValue = ''
-    },
-    showInput() {
-      this.inputVisible = true
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus()
-      })
-    },
+    
     //标注结果
     async markResult() {
       if (this.$route.params.extract == '标记') {
