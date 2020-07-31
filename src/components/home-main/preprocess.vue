@@ -6,9 +6,7 @@
       <el-table
         border
         max-height="400" 
-
-        :data="tablePre"
-        
+        :data="tablePre"       
         :header-cell-style="{ background: '#E5F0FF',color:'#6D87A7',textAlign:'center' }"
         :cell-style="cellstyle"
       >

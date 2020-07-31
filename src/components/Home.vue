@@ -197,8 +197,8 @@ export default {
 }
 .img-home-logo {
   cursor: pointer;
-  width: 50px;
-  height: 40px;
+  width: 37px;
+  height: 28px;
   background: url(../assets/Logo.png) no-repeat;
   background-size: cover;
 }

@@ -22,9 +22,10 @@
               title="路径"
               trigger="hover"
               :content="val"
+              
             >
               <div slot="reference" style="padding-top: 21px;
-        padding-left: 30px;">
+        padding-left: 30px;" @click="prview(val)">
                 <div class="text">{{ key }}</div>
                 <div class="line"></div>
                 <div class="icon"></div>
@@ -206,6 +207,11 @@ export default {
     }
   },
   methods: {
+    //跳转新页面展示表格
+    prview(entDataPath){
+      this.$router.push({path:'/prview',query:{file_path:entDataPath}})
+      // window.open('prview')
+    },
     //增加右侧类型
     addLabel(){
       this.inputVisible = true

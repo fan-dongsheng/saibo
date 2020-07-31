@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '../components/Home'
-
+import prview from '../components/home-main/prview.vue'
 
 Vue.use(Router)
 
@@ -64,9 +64,19 @@ const routes = [
                 component: () =>
                     import ('@/components/home-main/preprocess.vue')
                    
+            },
+            {
+                path: 'prview',
+                name: 'prview',
+                component:  prview    
             }
             
         ]
+    },
+    {
+        path: '/prview',
+        name: 'prview',
+        component:  prview    
     }
 
 ]
