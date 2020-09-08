@@ -1,0 +1,247 @@
+<template>
+  <el-container class="home-container">
+    <el-header style="height:60px;">
+      <div class="img-home-logo" @click="$router.push({path:'/'})">
+        <!-- <img src="../assets/logo.png" class="img-home-logo" alt /> -->
+        
+      </div>
+    <span  @click="$router.push({path:'/'})" style="font-size:20px;color:rgba(255,255,255,1);margin-left:20px;
+text-shadow:-6.123234262925839e-17px 1px 1px rgba(70,70,70,0.31);cursor: pointer;">航天赛博</span>
+    </el-header>
+    <el-container>
+     
+      <el-aside width="180px">
+        <!-- 侧边栏菜单区域 -->
+        <el-menu
+        v-loading="menuLoading"
+          class="menu"
+          active-text-color="#396FFF"
+          unique-opened
+          :collapse-transition="false"
+         router
+         :default-active="$route.path.indexOf('dataManagement')>=0?'/dataManagement':$route.path"
+        >
+          
+          <el-menu-item :index="`/${item.index}`" v-for="item in aside_list" :key="item.index" >
+            <!-- 一级菜单的模板区域 -->
+            <template slot="title">
+              <!-- 图标 -->
+              <img :src="require('../assets/indexNew/'+item.icon+'.png')" class="icom" />
+
+              <span>{{item.title}}</span>
+            </template>
+          </el-menu-item>
+        </el-menu>
+      </el-aside>
+      <el-main >
+        <!-- 路由占位符 -->
+        <!-- <keep-alive> -->
+              <!-- <router-view v-if="$route.meta.keepAlive"> -->
+                  <!-- 这里是会被缓存的视图组件，比如列表A页面 -->
+              <!-- </router-view>
+          </keep-alive> -->
+
+          <!-- <router-view v-if="!$route.meta.keepAlive"> -->
+              <!-- 这里是不被缓存的视图组件，比如详情B页面-->
+          <!-- </router-view> -->
+      
+        <router-view></router-view>
+        
+        <!-- <div style="width:100%;height:100%;background:rgba(229,240,255,1)">
+
+        </div> -->
+       <div class="flexImg" v-show="$route.path=='/'">
+            <div class="imglog"></div>
+       </div>
+        
+        
+        
+      </el-main>
+    </el-container>
+  </el-container>
+</template>
+
+<script>
+
+
+
+export default {
+  data() {
+    return {
+      menuLoading:false,
+      editableTabsValue: this.$my_editableTabsValue,
+      editableTabs: this.$my_tag_list,
+      default_active_index: { active: '' },
+
+      aside_list: [
+         {
+          index: 'projectManagement',
+          title: '项目管理',
+          name: 'projectManagement',
+          icon: '1',
+          component: '@/components/projectManagement.vue',
+          path: 'projectManagement',
+          menuorigin: 'local'
+        },
+         {
+          index: 'preprocess',
+          title: '数据预处理',
+          name: 'preprocess',
+          icon: '5',
+          component: '@/components/preprocess.vue',
+          path: 'preprocess',
+          menuorigin: 'local'
+        },
+        {
+          index: 'dataManagement',
+          title: '数据管理',
+          name: 'dataManagement',
+          icon: '2',
+          component: '@/components/dataManagement.vue',
+          path: 'dataManagement',
+          menuorigin: 'local'
+        },
+        {
+          index: 'modelManagement',
+          title: '模型管理',
+          name: 'modelManagement',
+          icon: '3',
+          component: '@/components/modelManagement.vue',
+          path: 'modelManagement',
+          menuorigin: 'local'
+        },
+        {
+          index: 'dataImport',
+          title: '数据导入',
+          name: 'dataImport',
+          icon: '4',
+          component: '@/components/dataImport.vue',
+          path: 'dataImport',
+          menuorigin: 'local'
+        },
+        {
+          index: 'question',
+          title: '图谱问答',
+          name: 'question',
+          icon: '6',
+          component: '@/components/question',
+          path: 'question',
+          menuorigin: 'local'
+        },
+       
+      ],
+      // 左侧菜单数据
+      menulist: []
+    }
+  },
+  components: {},
+  methods: {
+    
+  },
+  computed: {
+    // keepAliveTagsList() {
+    //   return this.$store.getters.keepAliveTagsList
+    // }
+  },
+  created(){
+    
+    this.menuLoading=true
+    window.setTimeout(() => {
+      this.menuLoading=false
+    }, 0);
+    
+  }
+}
+</script>
+<style lang="less">
+.flexImg{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.imglog{
+  background: url('../assets/home.png') no-repeat;
+  width: 830px;
+    height: 441px;
+    background-size: cover;
+}
+.el-menu-item.is-active {
+  background-color: #c1defc !important;
+}
+.menu {
+  font-family: 'Arial Normal', 'Arial';
+  font-weight: 400;
+  font-style: normal;
+  font-size: 14px;
+  color: #868686;
+}
+.overflow_h{
+  overflow-y:hidden;
+}
+
+.el-header {
+  background-color: #2682FF;
+  display: flex;
+  
+  padding-left: 0;
+  align-items: center;
+  color: #fff;
+  font-size: 14px;
+  > div {
+    display: flex;
+    align-items: center;
+    span {
+      margin-left: 15px;
+    }
+  }
+}
+.el-aside {
+  background:rgba(246,246,246,1);
+  
+  .el-menu {
+    color:#6D87A7;
+    border-right: none;
+    margin-top: 20px;
+    background:rgba(246,246,246,1);
+    .el-menu-item{
+      color:#6D87A7;
+      height: 62px;
+      line-height: 62px;
+    }
+  }
+  // border-right: 1px solid #C7CEDA;
+
+  //border-color: #C7CEDA !important;
+}
+.img-home-logo {
+  cursor: pointer;
+  width: 37px;
+  height: 28px;
+  background: url(../assets/Logo.png) no-repeat;
+  background-size: cover;
+}
+.icom {
+  margin-right: 10px;
+  left: 0px;
+  top: 0px;
+  width: 23px;
+  height: 23px;
+}
+.el-main {
+  height: calc(100vh - 60px);
+  display: block;
+  flex: 1;
+  flex-basis: auto;
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 0px !important;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+}
+
+</style>
+
+
